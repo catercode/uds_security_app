@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class StudentHome extends StatelessWidget {
   const StudentHome({super.key});
@@ -7,13 +8,24 @@ class StudentHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: Text(
-          "Report".toUpperCase(),
-          style: const TextStyle(
-              fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
-        ),
+      floatingActionButton: SizedBox(
+        width: 100,
+        child: FloatingActionButton(
+          backgroundColor: Colors.green.shade200,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          onPressed: () {},
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              "Report".toUpperCase(),
+              style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white),
+            ),
+          ),
+        ),  
       ),
       body: Stack(
         children: [
@@ -39,6 +51,44 @@ class StudentHome extends StatelessWidget {
               ),
             ),
           ),
+          Positioned(
+            top: 40,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Text(
+                    "Report".toUpperCase(),
+                    style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white),
+                  ),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.4),
+                  OutlinedButton(
+                    onPressed: () {},
+                    child: Text(
+                      "Filter".toUpperCase(),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600, color: Colors.white),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+
           // Student home container
           Positioned.fill(
             child: Align(
