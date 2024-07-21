@@ -19,8 +19,8 @@ class _LoginPageState extends State<LoginPage> {
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/background.jpg', // Replace with your image path
-              fit: BoxFit.fill,
+              'assets/images/background.jpeg', // Replace with your image path
+              fit: BoxFit.cover,
             ),
           ),
           // Green gradient overlay

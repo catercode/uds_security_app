@@ -20,7 +20,7 @@ class StudentHome extends StatelessWidget {
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/background.jpg', // Replace with your image path
+              'assets/images/background.jpeg', // Replace with your image path
               fit: BoxFit.cover,
             ),
           ),
