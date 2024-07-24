@@ -1,5 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:uds_security_app/screens/home/home.dart';
 import 'package:uds_security_app/screens/student/student.dart';
+
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -10,7 +15,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool rememberMe = false;
-
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/background.jpeg', // Replace with your image path
+              'assets/images/background.jpg', // Replace with your image path
               fit: BoxFit.cover,
             ),
           ),
@@ -69,6 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                           height: 16,
                         ),
                         TextField(
+                          controller: emailController,
                           decoration: InputDecoration(
                             prefixIcon:
                                 const Icon(Icons.email, color: Colors.green),
@@ -84,6 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 20),
                         TextField(
+                          controller: passController,
                           decoration: InputDecoration(
                             prefixIcon:
                                 const Icon(Icons.lock, color: Colors.green),
@@ -130,13 +138,26 @@ class _LoginPageState extends State<LoginPage> {
                           width: MediaQuery.of(context).size.width,
                           child: ElevatedButton(
                             onPressed: () {
-                              // Add your login logic here
-
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => StudentHome(),
-                                  ));
+                              final isLogin = login(
+                                  email: emailController.text.trim(),
+                                  password: passController.text.trim());
+                              log(isLogin);
+                              if (isLogin == "Student") {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const StudentHome(),
+                                    ));
+                              } else if (isLogin == "Staff") {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const HomePage(),
+                                    ));
+                              } else {
+                                ToastMessage()
+                                    .showToast("Incorreect email or password");
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(
@@ -165,5 +186,15 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+}
+
+String login({required String email, required String password}) {
+  if (email == "staff@gmail.com" && password == "123456") {
+    return "Staff";
+  } else if (email == "student@gmail.com" && password == "123456") {
+    return "Staudent";
+  } else {
+    return "";
   }
 }

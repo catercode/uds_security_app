@@ -3,30 +3,20 @@ import 'package:flutter/widgets.dart';
 import 'package:uds_security_app/screens/home/home.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
 
-class StudentHome extends StatelessWidget {
-  const StudentHome({super.key});
+class AllStaff extends StatelessWidget {
+  const AllStaff({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      floatingActionButton: SizedBox(
-        width: 100,
-        child: FloatingActionButton(
-          backgroundColor: Colors.green,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          onPressed: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              "Report".toUpperCase(),
-              style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white),
-            ),
-          ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
+        onPressed: () {},
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 40,
         ),
       ),
       body: Container(
@@ -54,25 +44,25 @@ class StudentHome extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // InkWell(
-                    //   onTap: () {
-                    //     Navigator.of(context).pop();
-                    //   },
-                    //   child: const Icon(
-                    //     Icons.arrow_back_ios,
-                    //     color: Colors.white,
-                    //   ),
-                    // ),
-
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.white,
+                      ),
+                    ),
                     Text(
-                      "Student".toUpperCase(),
+                      "STAFF".toUpperCase(),
                       style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w600,
                           color: Colors.white),
                     ),
+                    const SizedBox()
                   ],
                 ),
               ),
@@ -85,16 +75,16 @@ class StudentHome extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           ActivityCard(
-                            icon: Icons.report_problem_outlined,
-                            title: "CASES",
+                            icon: Icons.person,
+                            title: "MALES",
                             value: "10",
                           ),
                           SizedBox(
                             width: 16,
                           ),
                           ActivityCard(
-                            icon: Icons.ac_unit,
-                            title: "RESOLVED",
+                            icon: Icons.person,
+                            title: "FEMALES",
                             value: "5",
                           )
                         ],
@@ -130,9 +120,7 @@ class StudentHome extends StatelessWidget {
                                           builder: (context) =>
                                               const ReportDetail()));
                                 },
-                                child: const StudentCard(
-                                  isResolved: true,
-                                ));
+                                child: const StudentInfoCard());
                           },
                           separatorBuilder: (context, index) => const Divider(
                             color: Colors.grey,
@@ -151,59 +139,53 @@ class StudentHome extends StatelessWidget {
   }
 }
 
-class ActivityCard extends StatelessWidget {
-  const ActivityCard(
-      {super.key,
-      required this.title,
-      required this.value,
-      required this.icon});
-  final String title;
-  final String value;
-  final IconData icon;
+class StudentInfoCard extends StatelessWidget {
+  const StudentInfoCard({
+    super.key,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width / 2.3,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: Colors.green,
-            radius: 30,
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 30,
-            ),
-          ),
-          const SizedBox(
-            width: 8,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black),
+    return Row(
+      children: <Widget>[
+        const CircleAvatar(
+          radius: 30,
+          backgroundImage: AssetImage(
+              'assets/images/student.jpg'), // Replace with your image path
+        ),
+        const SizedBox(width: 20),
+        Expanded(
+          flex: 6,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                'John Paul',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(
-                value,
-                style: const TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.green),
+                'Bussiness',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
               ),
             ],
           ),
-        ],
-      ),
+        ),
+        const Text(
+          '2017',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }

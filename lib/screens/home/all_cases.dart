@@ -1,34 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:uds_security_app/screens/home/home.dart';
+import 'package:uds_security_app/screens/home/list_of_staff.dart';
+import 'package:uds_security_app/screens/home/list_of_student.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
 
-class StudentHome extends StatelessWidget {
-  const StudentHome({super.key});
+class AllCases extends StatelessWidget {
+  const AllCases({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      floatingActionButton: SizedBox(
-        width: 100,
-        child: FloatingActionButton(
-          backgroundColor: Colors.green,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          onPressed: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              "Report".toUpperCase(),
-              style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white),
-            ),
-          ),
-        ),
-      ),
       body: Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
@@ -54,49 +36,50 @@ class StudentHome extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // InkWell(
-                    //   onTap: () {
-                    //     Navigator.of(context).pop();
-                    //   },
-                    //   child: const Icon(
-                    //     Icons.arrow_back_ios,
-                    //     color: Colors.white,
-                    //   ),
-                    // ),
-
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.white,
+                      ),
+                    ),
                     Text(
-                      "Student".toUpperCase(),
+                      "CASES".toUpperCase(),
                       style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w600,
                           color: Colors.white),
                     ),
+                    const SizedBox()
                   ],
                 ),
               ),
               Expanded(
                 child: ListView(
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
                         children: [
-                          ActivityCard(
-                            icon: Icons.report_problem_outlined,
-                            title: "CASES",
-                            value: "10",
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const AllStaff(),
+                                  ));
+                            },
+                            child: const ActivityCard(
+                              width: 1,
+                              icon: Icons.person_4,
+                              title: "Total Cases",
+                              value: "10",
+                            ),
                           ),
-                          SizedBox(
-                            width: 16,
-                          ),
-                          ActivityCard(
-                            icon: Icons.ac_unit,
-                            title: "RESOLVED",
-                            value: "5",
-                          )
                         ],
                       ),
                     ),
@@ -131,7 +114,7 @@ class StudentHome extends StatelessWidget {
                                               const ReportDetail()));
                                 },
                                 child: const StudentCard(
-                                  isResolved: true,
+                                  isResolved: false,
                                 ));
                           },
                           separatorBuilder: (context, index) => const Divider(
@@ -156,20 +139,23 @@ class ActivityCard extends StatelessWidget {
       {super.key,
       required this.title,
       required this.value,
+      this.width = 2.3,
       required this.icon});
   final String title;
   final String value;
   final IconData icon;
+  final double width;
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width / 2.3,
+      width: MediaQuery.of(context).size.width / width,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.8),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircleAvatar(
             backgroundColor: Colors.green,
@@ -177,7 +163,7 @@ class ActivityCard extends StatelessWidget {
             child: Icon(
               icon,
               color: Colors.white,
-              size: 30,
+              size: 40,
             ),
           ),
           const SizedBox(
@@ -204,6 +190,69 @@ class ActivityCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class StudentCard extends StatelessWidget {
+  const StudentCard({
+    super.key,
+    required this.isResolved,
+  });
+  final bool isResolved;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        const CircleAvatar(
+          radius: 30,
+          backgroundImage: AssetImage(
+              'assets/images/student.jpg'), // Replace with your image path
+        ),
+        const SizedBox(width: 20),
+        Expanded(
+          flex: 6,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                'John Paul',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                'Some is tring to break my room',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
+              ),
+              Text(
+                'Intruder',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.red[600],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Spacer(),
+        Text(
+          isResolved ? 'Awaiting' : "Resolved",
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.green,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }
