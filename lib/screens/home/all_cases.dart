@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:uds_security_app/screens/home/list_of_staff.dart';
-import 'package:uds_security_app/screens/home/list_of_student.dart';
+import 'package:uds_security_app/screens/student/list_of_student.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
+import 'package:uds_security_app/screens/student/profile.dart';
 
 class AllCases extends StatelessWidget {
   const AllCases({super.key});
@@ -30,9 +31,7 @@ class AllCases extends StatelessWidget {
           ),
           child: Column(
             children: [
-              const SizedBox(
-                height: 60,
-              ),
+             CustomSafeArea(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(

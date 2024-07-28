@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
+import 'package:uds_security_app/screens/student/components/reportCase.dart';
 
 class ReportDetail extends StatefulWidget {
   const ReportDetail({super.key});
@@ -86,7 +87,22 @@ class _ReportDetailState extends State<ReportDetail> {
                     width: 16,
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const CustomerModalSheet(
+                            child: ThreatStatus(),
+                          );
+                        },
+                      ).then((status) {
+                        if (status != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Status selected: $status')),
+                          );
+                        }
+                      });
+                    },
                     child: const Card(
                       color: Colors.white,
                       child: Padding(

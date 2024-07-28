@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:uds_security_app/screens/home/home.dart';
+import 'package:uds_security_app/screens/home/dashboard.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
+import 'package:uds_security_app/screens/student/components/reportCase.dart';
+import 'package:uds_security_app/screens/student/profile.dart';
 
 class StudentHome extends StatelessWidget {
   const StudentHome({super.key});
@@ -16,7 +18,13 @@ class StudentHome extends StatelessWidget {
           backgroundColor: Colors.green,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ReportCase(),
+                ));
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
@@ -54,18 +62,9 @@ class StudentHome extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // InkWell(
-                    //   onTap: () {
-                    //     Navigator.of(context).pop();
-                    //   },
-                    //   child: const Icon(
-                    //     Icons.arrow_back_ios,
-                    //     color: Colors.white,
-                    //   ),
-                    // ),
-
+                    const SizedBox(),
                     Text(
                       "Student".toUpperCase(),
                       style: const TextStyle(
@@ -73,8 +72,26 @@ class StudentHome extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                           color: Colors.white),
                     ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const ProfileScreen(),
+                        ));
+                      },
+                      child: const CircleAvatar(
+                        radius: 25,
+                        backgroundColor: Colors.white,
+                        child: Text(
+                          "BA",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    )
                   ],
                 ),
+              ),
+              const SizedBox(
+                height: 16,
               ),
               Expanded(
                 child: ListView(

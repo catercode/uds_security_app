@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:uds_security_app/screens/home/home.dart';
+import 'package:uds_security_app/screens/home/dashboard.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
+import 'package:uds_security_app/screens/student/profile.dart';
 
 class AllStaff extends StatelessWidget {
   const AllStaff({super.key});
@@ -38,9 +39,7 @@ class AllStaff extends StatelessWidget {
           ),
           child: Column(
             children: [
-              const SizedBox(
-                height: 60,
-              ),
+              CustomSafeArea(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(

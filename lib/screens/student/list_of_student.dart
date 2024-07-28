@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:uds_security_app/screens/home/home.dart';
+import 'package:uds_security_app/screens/home/dashboard.dart';
+import 'package:uds_security_app/screens/student/components/reportCase.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
+import 'package:uds_security_app/screens/student/profile.dart';
 
 class AllStudent extends StatelessWidget {
   const AllStudent({super.key});
@@ -10,15 +12,23 @@ class AllStudent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
-        onPressed: () {},
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 40,
-        ),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: Colors.green,
+      //   onPressed: () {
+      //     Navigator.push(
+      //         context,
+      //         MaterialPageRoute(
+      //           builder: (context) => AddStudent(),
+      //         )
+
+      //         );
+      //   },
+      //   child: const Icon(
+      //     Icons.add,
+      //     color: Colors.white,
+      //     size: 40,
+      //   ),
+      // ),
       body: Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
@@ -38,9 +48,7 @@ class AllStudent extends StatelessWidget {
           ),
           child: Column(
             children: [
-              const SizedBox(
-                height: 60,
-              ),
+               CustomSafeArea(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
@@ -55,7 +63,6 @@ class AllStudent extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-
                     Text(
                       "Students".toUpperCase(),
                       style: const TextStyle(
@@ -63,7 +70,7 @@ class AllStudent extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                           color: Colors.white),
                     ),
-                    SizedBox(),
+                    const SizedBox(),
                   ],
                 ),
               ),

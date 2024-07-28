@@ -3,8 +3,11 @@ import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uds_security_app/screens/home/all_cases.dart';
 import 'package:uds_security_app/screens/home/list_of_staff.dart';
-import 'package:uds_security_app/screens/home/list_of_student.dart';
+import 'package:uds_security_app/screens/student/components/reportCase.dart';
+import 'package:uds_security_app/screens/student/components/sort.dart';
+import 'package:uds_security_app/screens/student/list_of_student.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
+import 'package:uds_security_app/screens/student/profile.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -38,25 +41,64 @@ class HomePage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // InkWell(
-                    //   onTap: () {
-                    //     Navigator.of(context).pop();
-                    //   },
-                    //   child: const Icon(
-                    //     Icons.arrow_back_ios,
-                    //     color: Colors.white,
-                    //   ),
-                    // ),
-
+                    InkWell(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return CustomerModalSheet(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  ListTile(
+                                    onTap: () {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) =>
+                                            const SecurityGroupsScreen(),
+                                      ));
+                                    },
+                                    title: const Text(
+                                      "Duty Schedule",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.green),
+                                    ),
+                                    trailing: const Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 20,
+                                      color: Colors.green,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            );
+                          },
+                        ).then((status) {
+                          if (status != null) {
+                            ToastMessage().showToast(
+                              'Case status has change to $status',
+                            );
+                          }
+                        });
+                      },
+                      child: const Icon(
+                        Icons.menu,
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                    ),
                     Text(
-                      "Dashboard".toUpperCase(),
+                      "Dashboards".toUpperCase(),
                       style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w600,
                           color: Colors.white),
                     ),
+                    const SizedBox()
                   ],
                 ),
               ),
