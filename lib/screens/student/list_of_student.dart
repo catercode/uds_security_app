@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:uds_security_app/screens/home/components/add_student.dart';
 import 'package:uds_security_app/screens/home/dashboard.dart';
 import 'package:uds_security_app/screens/student/components/reportCase.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
@@ -12,23 +13,25 @@ class AllStudent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      // floatingActionButton: FloatingActionButton(
-      //   backgroundColor: Colors.green,
-      //   onPressed: () {
-      //     Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //           builder: (context) => AddStudent(),
-      //         )
-
-      //         );
-      //   },
-      //   child: const Icon(
-      //     Icons.add,
-      //     color: Colors.white,
-      //     size: 40,
-      //   ),
-      // ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
+        onPressed: () {
+          showModalBottomSheet(
+            isScrollControlled: true,
+            context: context,
+            builder: (BuildContext context) {
+              return const CustomerModalSheet(
+                child: AddStudentScreen(),
+              );
+            },
+          );
+        },
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 40,
+        ),
+      ),
       body: Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
@@ -48,7 +51,7 @@ class AllStudent extends StatelessWidget {
           ),
           child: Column(
             children: [
-               CustomSafeArea(),
+              const CustomSafeArea(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(

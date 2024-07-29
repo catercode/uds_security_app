@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:responsive_framework/responsive_wrapper.dart';
+import 'package:uds_security_app/screens/home/components/add_guard.dart';
 import 'package:uds_security_app/screens/home/components/add_staff.dart';
 import 'package:uds_security_app/screens/home/dashboard.dart';
+import 'package:uds_security_app/screens/home/sort.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
 import 'package:uds_security_app/screens/student/components/reportCase.dart';
 import 'package:uds_security_app/screens/student/profile.dart';
 
-class AllStaff extends StatelessWidget {
-  const AllStaff({super.key});
+class AllGuard extends StatelessWidget {
+  const AllGuard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +24,7 @@ class AllStaff extends StatelessWidget {
             context: context,
             builder: (BuildContext context) {
               return const CustomerModalSheet(
-                child: AddStaffScreen(),
+                child: AddGuardScreen(),
               );
             },
           );
@@ -67,7 +70,7 @@ class AllStaff extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "STAFF".toUpperCase(),
+                      "SECURITY GUARDS ".toUpperCase(),
                       style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w600,
@@ -80,25 +83,16 @@ class AllStaff extends StatelessWidget {
               Expanded(
                 child: ListView(
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ActivityCard(
-                            icon: Icons.person,
-                            title: "MALES",
-                            value: "10",
-                          ),
-                          SizedBox(
-                            width: 16,
-                          ),
-                          ActivityCard(
-                            icon: Icons.person,
-                            title: "FEMALES",
-                            value: "5",
-                          )
-                        ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: SizedBox(
+                        width: ResponsiveWrapper.of(context).scaledWidth,
+                        child: const ActivityCard(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          icon: Icons.person,
+                          title: "TOTAL GUARDS",
+                          value: "5",
+                        ),
                       ),
                     ),
                     const SizedBox(
@@ -131,7 +125,7 @@ class AllStaff extends StatelessWidget {
                                           builder: (context) =>
                                               const ReportDetail()));
                                 },
-                                child: const StudentInfoCard());
+                                child: const SecurityInfoCard());
                           },
                           separatorBuilder: (context, index) => const Divider(
                             color: Colors.grey,
@@ -200,4 +194,3 @@ class StudentInfoCard extends StatelessWidget {
     );
   }
 }
-

@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uds_security_app/screens/home/all_cases.dart';
+import 'package:uds_security_app/screens/home/list_of_guards.dart';
 import 'package:uds_security_app/screens/home/list_of_staff.dart';
 import 'package:uds_security_app/screens/student/components/reportCase.dart';
-import 'package:uds_security_app/screens/student/components/sort.dart';
+import 'package:uds_security_app/screens/home/sort.dart';
 import 'package:uds_security_app/screens/student/list_of_student.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
 import 'package:uds_security_app/screens/student/profile.dart';
@@ -56,6 +57,26 @@ class HomePage extends StatelessWidget {
                                     onTap: () {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
+                                        builder: (context) => const AllGuard(),
+                                      ));
+                                    },
+                                    title: const Text(
+                                      "Security Guards",
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.green),
+                                    ),
+                                    trailing: const Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 20,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                  ListTile(
+                                    onTap: () {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
                                         builder: (context) =>
                                             const SecurityGroupsScreen(),
                                       ));
@@ -63,7 +84,7 @@ class HomePage extends StatelessWidget {
                                     title: const Text(
                                       "Duty Schedule",
                                       style: TextStyle(
-                                          fontSize: 18,
+                                          fontSize: 20,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.green),
                                     ),
@@ -92,7 +113,7 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "Dashboards".toUpperCase(),
+                      "Dashboard".toUpperCase(),
                       style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w600,
@@ -257,10 +278,12 @@ class ActivityCard extends StatelessWidget {
       {super.key,
       required this.title,
       required this.value,
+      this.mainAxisAlignment = MainAxisAlignment.start,
       required this.icon});
   final String title;
   final String value;
   final IconData icon;
+  final MainAxisAlignment mainAxisAlignment;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -271,6 +294,7 @@ class ActivityCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
+        mainAxisAlignment:mainAxisAlignment,
         children: [
           CircleAvatar(
             backgroundColor: Colors.green,
