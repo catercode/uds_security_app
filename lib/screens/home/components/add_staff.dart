@@ -100,7 +100,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                       TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(
-                          hintText: 'Student ID',
+                          hintText: 'Staff ID',
                           filled: true,
                           fillColor: Colors.white.withOpacity(0.8),
                           hintStyle: const TextStyle(fontSize: 18),
