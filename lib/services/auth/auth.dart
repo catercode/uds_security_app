@@ -1,28 +1,32 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:uds_security_app/models/userModel/user.model.dart';
 
 class AuthServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  Future<Either<bool, UserModel>> login(
-      String email, String password, String role) async {
+  Future<Either<String, UserModel>> login(
+      {required String sid, required String password}) async {
     try {
       final QuerySnapshot querySnapshot = await _firestore
           .collection('users')
-          .where('email', isEqualTo: false)
-          .where('password', isEqualTo: "Business")
-          .where('role', isEqualTo: role)
+          .where('userId', isEqualTo: sid)
+          .where('password', isEqualTo: password)
           .get();
       final data = querySnapshot.docs;
+
       if (data.isNotEmpty) {
-        final user = UserModel.fromJson(data as Map<String, dynamic>);
+        final user =
+            UserModel.fromJson(data.first.data() as Map<String, dynamic>);
 
         return Right(user);
       } else {
-        return const Left(false);
+        return const Left("Invalid Credentials");
       }
     } catch (e) {
-      return const Left(false);
+      log("Failed to login: $e");
+      return const Left("Please check your internet connection");
       // TODO
     }
   }
@@ -41,12 +45,13 @@ class AuthServices {
         "email": user.email,
         "role": user.role,
         "address": user.address,
-        "date": user.date,
-        "status": user.status,
+        "date": DateTime.now().toString(),
+        "status": "Active",
         "password": user.password
       });
       return const Right(true);
     } catch (e) {
+      log("Failed to create user: $e");
       return const Left("Failed to create user");
       // TODO
     }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:uds_security_app/screens/auth/validate_account.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -9,29 +11,26 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _middleNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _middleNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _submitForm() {
-    if (_formKey.currentState?.validate() ?? false) {
-      // Perform signup action (e.g., send data to server)
-      print("Name: ${_nameController.text}");
-      print("Email: ${_emailController.text}");
-      print("Password: ${_passwordController.text}");
-    }
-  }
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -102,39 +101,39 @@ class _SignupScreenState extends State<SignupScreen> {
                         child: ListView(
                           shrinkWrap: true,
                           children: <Widget>[
-                            const Text(
-                              'Student ID',
-                              style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black),
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            TextFormField(
-                              controller: _nameController,
-                              decoration: InputDecoration(
-                                hintText: 'Student ID',
-                                filled: true,
-                                fillColor: Colors.white.withOpacity(0.8),
-                                hintStyle: const TextStyle(fontSize: 18),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                  borderSide: BorderSide.none,
-                                ),
-                              ),
-                              keyboardType: TextInputType.emailAddress,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your name';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(
-                              height: 16,
-                            ),
+                            // const Text(
+                            //   'Student ID',
+                            //   style: TextStyle(
+                            //       fontSize: 22,
+                            //       fontWeight: FontWeight.w600,
+                            //       color: Colors.black),
+                            // ),
+                            // const SizedBox(
+                            //   height: 8,
+                            // ),
+                            // TextFormField(
+                            //   controller: _nameController,
+                            //   decoration: InputDecoration(
+                            //     hintText: 'Student ID',
+                            //     filled: true,
+                            //     fillColor: Colors.white.withOpacity(0.8),
+                            //     hintStyle: const TextStyle(fontSize: 18),
+                            //     border: OutlineInputBorder(
+                            //       borderRadius: BorderRadius.circular(30),
+                            //       borderSide: BorderSide.none,
+                            //     ),
+                            //   ),
+                            //   keyboardType: TextInputType.emailAddress,
+                            //   validator: (value) {
+                            //     if (value == null || value.isEmpty) {
+                            //       return 'Please enter your name';
+                            //     }
+                            //     return null;
+                            //   },
+                            // ),
+                            // const SizedBox(
+                            //   height: 16,
+                            // ),
                             const Text(
                               'First Name',
                               style: TextStyle(
@@ -146,7 +145,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               height: 8,
                             ),
                             TextFormField(
-                              controller: _emailController,
+                              controller: _firstNameController,
                               decoration: InputDecoration(
                                 hintText: 'First Name',
                                 filled: true,
@@ -159,12 +158,9 @@ class _SignupScreenState extends State<SignupScreen> {
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your email';
+                                  return 'Please enter your first name';
                                 }
-                                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                                    .hasMatch(value)) {
-                                  return 'Please enter a valid email';
-                                }
+
                                 return null;
                               },
                             ),
@@ -182,7 +178,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               height: 8,
                             ),
                             TextFormField(
-                              controller: _passwordController,
+                              controller: _middleNameController,
                               decoration: InputDecoration(
                                 hintText: 'Middle Namae',
                                 filled: true,
@@ -193,14 +189,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                               ),
-                              obscureText: true,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter your password';
+                                  return 'Please enter your middle name';
                                 }
-                                if (value.length < 6) {
-                                  return 'Password must be at least 6 characters long';
-                                }
+
                                 return null;
                               },
                             ),
@@ -218,7 +211,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               height: 8,
                             ),
                             TextFormField(
-                              controller: _confirmPasswordController,
+                              controller: _lastNameController,
                               decoration: InputDecoration(
                                 hintText: 'Last Name',
                                 filled: true,
@@ -229,14 +222,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                               ),
-                              obscureText: true,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please confirm your password';
+                                  return 'Please confirm your last name';
                                 }
-                                if (value != _passwordController.text) {
-                                  return 'Passwords do not match';
-                                }
+
                                 return null;
                               },
                             ),
@@ -244,7 +234,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               height: 16,
                             ),
                             const Text(
-                              'Faculty',
+                              'Email Address',
                               style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w600,
@@ -254,9 +244,83 @@ class _SignupScreenState extends State<SignupScreen> {
                               height: 8,
                             ),
                             TextFormField(
-                              controller: _confirmPasswordController,
+                              controller: _emailController,
                               decoration: InputDecoration(
-                                hintText: 'Faculty',
+                                hintText: 'Email Address',
+                                filled: true,
+                                fillColor: Colors.white.withOpacity(0.8),
+                                hintStyle: const TextStyle(fontSize: 18),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please confirm your email';
+                                }
+
+                                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                    .hasMatch(value)) {
+                                  return 'Please enter a valid email';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            const Text(
+                              'Phone Number',
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            TextFormField(
+                              keyboardType: TextInputType.phone,
+                              controller: _phoneController,
+                              decoration: InputDecoration(
+                                hintText: 'Phone Number',
+                                filled: true,
+                                fillColor: Colors.white.withOpacity(0.8),
+                                hintStyle: const TextStyle(fontSize: 18),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please confirm your phone number';
+                                }
+                                if (_phoneController.text.length < 10 ||
+                                    _phoneController.text.length > 10) {
+                                  return 'Invalid phone number';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            const Text(
+                              'Password',
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            TextFormField(
+                              controller: _passwordController,
+                              decoration: InputDecoration(
+                                hintText: 'Password',
                                 filled: true,
                                 fillColor: Colors.white.withOpacity(0.8),
                                 hintStyle: const TextStyle(fontSize: 18),
@@ -270,9 +334,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 if (value == null || value.isEmpty) {
                                   return 'Please confirm your password';
                                 }
-                                if (value != _passwordController.text) {
-                                  return 'Passwords do not match';
-                                }
+
                                 return null;
                               },
                             ),
@@ -280,7 +342,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               height: 16,
                             ),
                             const Text(
-                              'Hostile',
+                              'Confirm Password',
                               style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w600,
@@ -290,17 +352,11 @@ class _SignupScreenState extends State<SignupScreen> {
                               height: 8,
                             ),
                             TextFormField(
-                              readOnly: true,
                               controller: _confirmPasswordController,
                               decoration: InputDecoration(
-                                hintText: 'Select Hostile',
+                                hintText: 'Confirm Password',
                                 filled: true,
                                 fillColor: Colors.white.withOpacity(0.8),
-                                suffixIcon: const Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 30,
-                                  color: Colors.green,
-                                ),
                                 hintStyle: const TextStyle(fontSize: 18),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
@@ -312,26 +368,72 @@ class _SignupScreenState extends State<SignupScreen> {
                                 if (value == null || value.isEmpty) {
                                   return 'Please confirm your password';
                                 }
-                                if (value != _passwordController.text) {
+                                if (_confirmPasswordController.text !=
+                                    _passwordController.text) {
                                   return 'Passwords do not match';
                                 }
                                 return null;
                               },
                             ),
                             const SizedBox(height: 60),
-                            ElevatedButton(
-                              style: const ButtonStyle(
-                                  backgroundColor:
-                                      WidgetStatePropertyAll(Colors.green)),
-                              onPressed: _submitForm,
-                              child: const Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Text(
-                                  'Sign Up',
-                                  style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white),
+                            Visibility(
+                              visible: !isLoading,
+                              replacement: const SpinKitFadingCircle(
+                                color: Colors.green,
+                              ),
+                              child: ElevatedButton(
+                                style: const ButtonStyle(
+                                    backgroundColor:
+                                        WidgetStatePropertyAll(Colors.green)),
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    Future.delayed(
+                                      const Duration(seconds: 3),
+                                      () {
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ValidateUserScreen(
+                                                      firstName:
+                                                          _firstNameController
+                                                              .text,
+                                                      lastName:
+                                                          _lastNameController
+                                                              .text,
+                                                      email:
+                                                          _emailController.text,
+                                                      password:
+                                                          _passwordController
+                                                              .text,
+                                                      address:
+                                                          _addressController
+                                                              .text,
+                                                      middleName:
+                                                          _middleNameController
+                                                              .text,
+                                                      phone:
+                                                          _phoneController.text,
+                                                    )));
+                                      },
+                                    );
+                                  }
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Text(
+                                    'NEXT',
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white),
+                                  ),
                                 ),
                               ),
                             ),

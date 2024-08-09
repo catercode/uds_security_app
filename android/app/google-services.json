@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "97255775091",
+    "project_id": "usd-app-1440a",
+    "storage_bucket": "usd-app-1440a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:97255775091:android:e0df0c42fa467891500306",
+        "android_client_info": {
+          "package_name": "com.example.uds_security_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUKKsEjymF0vRun6FxCeRhG8Sjc5pz90Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

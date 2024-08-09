@@ -29,7 +29,7 @@ mixin _$UserModel {
   String? get role => throw _privateConstructorUsedError;
   String? get address => throw _privateConstructorUsedError;
   String? get date => throw _privateConstructorUsedError;
-  bool? get status => throw _privateConstructorUsedError;
+  String? get status => throw _privateConstructorUsedError;
   String? get password => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -53,7 +53,7 @@ abstract class $UserModelCopyWith<$Res> {
       String? role,
       String? address,
       String? date,
-      bool? status,
+      String? status,
       String? password});
 }
 
@@ -122,7 +122,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as bool?,
+              as String?,
       password: freezed == password
           ? _value.password
           : password // ignore: cast_nullable_to_non_nullable
@@ -149,7 +149,7 @@ abstract class _$$UserModelImplCopyWith<$Res>
       String? role,
       String? address,
       String? date,
-      bool? status,
+      String? status,
       String? password});
 }
 
@@ -216,7 +216,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as bool?,
+              as String?,
       password: freezed == password
           ? _value.password
           : password // ignore: cast_nullable_to_non_nullable
@@ -263,7 +263,7 @@ class _$UserModelImpl implements _UserModel {
   @override
   final String? date;
   @override
-  final bool? status;
+  final String? status;
   @override
   final String? password;
 
@@ -324,7 +324,7 @@ abstract class _UserModel implements UserModel {
       final String? role,
       final String? address,
       final String? date,
-      final bool? status,
+      final String? status,
       final String? password}) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
@@ -349,7 +349,7 @@ abstract class _UserModel implements UserModel {
   @override
   String? get date;
   @override
-  bool? get status;
+  String? get status;
   @override
   String? get password;
   @override

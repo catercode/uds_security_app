@@ -15,7 +15,7 @@ class UserModel with _$UserModel {
       String? role,
       String? address,
       String? date,
-      bool? status,
+      String? status,
       String? password
       }) = _UserModel;
 

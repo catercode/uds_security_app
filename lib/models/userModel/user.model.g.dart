@@ -17,7 +17,7 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
       role: json['role'] as String?,
       address: json['address'] as String?,
       date: json['date'] as String?,
-      status: json['status'] as bool?,
+      status: json['status'] as String?,
       password: json['password'] as String?,
     );
 
