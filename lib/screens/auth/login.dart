@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
   void _submitForm() async {
-    if (_formKey.currentState?.validate() ?? false) {
+    if (_formKey.currentState!.validate()) {
       setState(() {
         isLoading = true;
       });
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
         (success) {
           ToastMessage().showToast("Login successful");
 
-          if (success.role == Position.staff.toString()) {
+          if (success.role == Position.staff.name) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const HomePage()),
@@ -51,16 +51,7 @@ class _LoginPageState extends State<LoginPage> {
             setState(() {
               isLoading = false;
             });
-          } else if (success.role == Position.student) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const StudentHome()),
-            );
-
-            setState(() {
-              isLoading = false;
-            });
-          } else {
+          } else if (success.role == Position.student.name) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const StudentHome()),
@@ -70,6 +61,16 @@ class _LoginPageState extends State<LoginPage> {
               isLoading = false;
             });
           }
+          //  else {
+          //   Navigator.pushReplacement(
+          //     context,
+          //     MaterialPageRoute(builder: (context) => const StudentHome()),
+          //   );
+
+          //   setState(() {
+          //     isLoading = false;
+          //   });
+          // }
         },
       );
     }
@@ -143,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(
                           height: 16,
                         ),
-                        TextField(
+                        TextFormField(
                           controller: _idController,
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.person,
@@ -158,9 +159,16 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your id';
+                            }
+
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 20),
-                        TextField(
+                        TextFormField(
                           controller: passController,
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.lock,
@@ -175,6 +183,13 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           obscureText: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 20),
                         Row(

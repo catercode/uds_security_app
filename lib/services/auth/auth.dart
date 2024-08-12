@@ -57,16 +57,43 @@ class AuthServices {
     }
   }
 
-  Future<bool> resetPassword(String email, String password) async {
+  Future<Either<String, bool>> resetPassword(
+      {required String email, required String password}) async {
     try {
       await _firestore
           .collection('users')
           .doc(email)
           .update({'password': password});
-      return true;
+      return const Right(true);
     } catch (e) {
-      // TODO
-      return true;
+    log("Error ================$e");
+      return const Right(false);
+    }
+  }
+
+  Future<Either<String, bool>> verifyEmail({required String email}) async {
+    try {
+      await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
+
+      final QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
+
+      final data = querySnapshot.docs;
+      if (data.isNotEmpty) {
+        // final user =
+        //     UserModel.fromJson(data.first.data() as Map<String, dynamic>);
+        return const Right(true);
+      } else {
+        return const Right(false);
+      }
+    } catch (e) {
+      log("====Error==$e");
+      return const Right(false);
     }
   }
 }
