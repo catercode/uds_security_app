@@ -47,6 +47,10 @@ class AuthServices {
         "address": user.address,
         "date": DateTime.now().toString(),
         "status": "Active",
+        "hostile": user.hostile,
+        "department": user.department,
+        "faculty": user.faculty,
+        "middleName": user.middleName,
         "password": user.password
       });
       return const Right(true);
@@ -57,43 +61,42 @@ class AuthServices {
     }
   }
 
-  Future<Either<String, bool>> resetPassword(
-      {required String email, required String password}) async {
+  Future<Either<String, bool>> resetPassword({
+    required String userid,
+    required String password,
+  }) async {
     try {
       await _firestore
           .collection('users')
-          .doc(email)
+          .doc(userid)
           .update({'password': password});
+      log("Password updated successfully");
       return const Right(true);
     } catch (e) {
-    log("Error ================$e");
+      log("Failed to update password : $e");
       return const Right(false);
     }
   }
 
-  Future<Either<String, bool>> verifyEmail({required String email}) async {
+  Future<Either<String, String>> verifyEmail({required String email}) async {
     try {
-      await _firestore
-          .collection('users')
-          .where('email', isEqualTo: email)
-          .get();
-
       final QuerySnapshot querySnapshot = await _firestore
           .collection('users')
           .where('email', isEqualTo: email)
           .get();
-
       final data = querySnapshot.docs;
-      if (data.isNotEmpty) {
-        // final user =
-        //     UserModel.fromJson(data.first.data() as Map<String, dynamic>);
-        return const Right(true);
+      final userid = data.first.id;
+
+      if (userid.isNotEmpty) {
+        log("====data==${data.first.id}");
+
+        return Right(userid);
       } else {
-        return const Right(false);
+        return Right(userid);
       }
     } catch (e) {
       log("====Error==$e");
-      return const Right(false);
+      return const Left("");
     }
   }
 }

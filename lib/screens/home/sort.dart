@@ -1,85 +1,17 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
-import 'package:uds_security_app/screens/home/list_of_staff.dart';
 
 class SecurityGroupsScreen extends StatefulWidget {
   const SecurityGroupsScreen({super.key});
 
   @override
-  _SecurityGroupsScreenState createState() => _SecurityGroupsScreenState();
+  State<SecurityGroupsScreen> createState() => _SecurityGroupsScreenState();
 }
 
 class _SecurityGroupsScreenState extends State<SecurityGroupsScreen> {
-  final List<List<String>> initialGroups = [
-    ['ABC', 'ABC'],
-    ['FGH'],
-    ['XYZ'],
-    ['TWS'],
-    ['JKL']
-  ];
-
-  List<List<String>> currentGroups = [];
-  DateTime? lastShuffleDate;
-  final Box box = Hive.box('securityGroups');
-
-  @override
-  void initState() {
-    super.initState();
-    loadGroups();
-  }
-
-  Future<void> loadGroups() async {
-    final lastShuffleDateString = box.get('lastShuffleDate');
-
-    if (lastShuffleDateString != null) {
-      lastShuffleDate = DateTime.parse(lastShuffleDateString);
-      currentGroups = (box.get('currentGroups') as List<dynamic>)
-          .map((group) => (group as List<dynamic>).cast<String>())
-          .toList();
-    }
-
-    if (currentGroups.isEmpty || _shouldShuffle()) {
-      _shuffleGroups();
-    } else {
-      setState(() {});
-    }
-  }
-
-  bool _shouldShuffle() {
-    if (lastShuffleDate == null) return true;
-    final now = DateTime.now();
-    final difference = now.difference(lastShuffleDate!).inDays;
-    return difference >= 7;
-  }
-
-  Future<void> _shuffleGroups() async {
-    final random = Random();
-    currentGroups = List.from(initialGroups);
-    currentGroups.shuffle(random);
-
-    lastShuffleDate = DateTime.now();
-    await box.put('lastShuffleDate', lastShuffleDate!.toIso8601String());
-    await box.put('currentGroups', currentGroups);
-
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Security Groups'),
-      //   actions: [
-      //     IconButton(
-      //       icon: const Icon(Icons.refresh),
-      //       onPressed: _shuffleGroups,
-      //     ),
-      //   ],
-      //   backgroundColor: Colors.green,
-      // ),
       body: Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
@@ -97,14 +29,13 @@ class _SecurityGroupsScreenState extends State<SecurityGroupsScreen> {
               end: Alignment.bottomCenter,
             ),
           ),
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 32,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
+          child: Column(children: [
+            const SizedBox(
+              height: 60,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     InkWell(
@@ -117,126 +48,104 @@ class _SecurityGroupsScreenState extends State<SecurityGroupsScreen> {
                       ),
                     ),
                     Text(
-                      "Security Groups".toUpperCase(),
+                      "Duty Schedule".toUpperCase(),
                       style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w600,
                           color: Colors.white),
                     ),
                     const SizedBox()
-                  ],
-                ),
+                  ]),
+            ),
+            const Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: ExpansionPanelListExample(),
               ),
-              const SizedBox(
-                height: 30,
-              ),
-              Expanded(
-                  child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.only(top: 32),
-                height: MediaQuery.of(context).size.height * 0.8,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-                ),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: 3,
-                  itemBuilder: (context, index) => const Padding(
-                    padding: EdgeInsets.only(bottom: 16),
-                    child: GroupTileCard(),
-                  ),
-                ),
-              ))
-              // Container(
-              //   width: ResponsiveWrapper.of(context).scaledWidth,
-              //   padding: const EdgeInsets.all(20),
-              //   margin: const EdgeInsets.all(20),
-              //   decoration: BoxDecoration(
-              //     color: Colors.white.withOpacity(0.9),
-              //     borderRadius: BorderRadius.circular(20),
-              //   ),
-              //   child: Column(
-              //     mainAxisSize: MainAxisSize.min,
-              //     children: List.generate(currentGroups.length, (index) {
-              //       return Column(
-              //         children: [
-              //           Text(
-              //             'Group ${index + 1}',
-              //             style: const TextStyle(
-              //               fontSize: 20,
-              //               fontWeight: FontWeight.bold,
-              //             ),
-              //           ),
-              //           Text(
-              //             currentGroups[index].join(', '),
-              //             style: const TextStyle(
-              //               fontSize: 16,
-              //             ),
-              //           ),
-              //           const SizedBox(height: 10),
-              //         ],
-              //       );
-              //     }),
-              //   ),
-              // ),
-            ],
-          ),
+            )
+          ]),
         ),
       ),
     );
   }
 }
 
-class GroupTileCard extends StatelessWidget {
-  const GroupTileCard({
-    super.key,
-  });
+class ExpansionPanelListExample extends StatefulWidget {
+  const ExpansionPanelListExample({super.key});
 
   @override
+  _ExpansionPanelListExampleState createState() =>
+      _ExpansionPanelListExampleState();
+}
+
+class _ExpansionPanelListExampleState extends State<ExpansionPanelListExample> {
+  final List<String> units = [
+    "Unit A",
+    "Unit B",
+    "Unit C",
+    "Unit D",
+    "Unit E",
+  ];
+  @override
   Widget build(BuildContext context) {
-    return ExpansionTile(
-      collapsedTextColor: Colors.white,
-      collapsedShape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      collapsedBackgroundColor: Colors.white.withOpacity(0.8),
-      backgroundColor: Colors.green.withOpacity(0.5),
-      title: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return SingleChildScrollView(
+      child: Column(
         children: [
-          Text(
-            "Group 1",
-            style: TextStyle(
-                color: Colors.black, fontSize: 25, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            "Week1",
-            style: TextStyle(
-                color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
-          ),
+          ...List.generate(
+            units.length,
+            (index) => Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: UnitExpandedTile(
+                unit: units[index],
+              ),
+            ),
+          )
         ],
       ),
-      children: [
-        ...List.generate(
-          4,
-          (index) => SizedBox(
-              width: ResponsiveWrapper.of(context).scaledWidth,
-              child: const Card(
-                  color: Colors.white,
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: SecurityInfoCard(),
-                  ))),
-        )
-      ],
     );
   }
 }
+
+class UnitExpandedTile extends StatelessWidget {
+  const UnitExpandedTile({super.key, required this.unit});
+  final String unit;
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionTile(
+        collapsedShape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: Colors.white,
+        collapsedBackgroundColor: Colors.white,
+        title: Text(
+          unit,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        children: [
+          SizedBox(
+            height: ResponsiveWrapper.of(context).scaledHeight * 0.4,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ...List.generate(
+                    5,
+                    (index) {
+                      return const Padding(
+                        padding:
+                            EdgeInsets.only(bottom: 16, left: 16, right: 16),
+                        child: SecurityInfoCard(),
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
+          )
+        ]);
+  }
+}
+
+// Define a model class for each item
 
 class SecurityInfoCard extends StatelessWidget {
   const SecurityInfoCard({
@@ -294,6 +203,13 @@ class SecurityInfoCard extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(
+          width: 16,
+        ),
+        const Icon(
+          Icons.radio_button_checked_outlined,
+          size: 40,
+        )
       ],
     );
   }

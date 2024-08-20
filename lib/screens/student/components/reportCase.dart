@@ -236,7 +236,6 @@ class CustomerModalSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-    
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -275,8 +274,9 @@ class ThreatStatus extends StatelessWidget {
 }
 
 class StausTile extends StatelessWidget {
-  const StausTile({super.key, required this.status});
+  const StausTile({super.key, required this.status, this.onTap});
   final String status;
+  final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -285,12 +285,13 @@ class StausTile extends StatelessWidget {
         style: const TextStyle(
             fontSize: 18, fontWeight: FontWeight.w600, color: Colors.green),
       ),
-      onTap: () {
-        Navigator.pop(
-          context,
-          status,
-        );
-      },
+      onTap: onTap ??
+          () {
+            Navigator.pop(
+              context,
+              status,
+            );
+          },
       trailing: const Icon(
         Icons.arrow_forward_ios,
         size: 18,

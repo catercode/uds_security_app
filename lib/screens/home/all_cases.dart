@@ -31,7 +31,7 @@ class AllCases extends StatelessWidget {
           ),
           child: Column(
             children: [
-             CustomSafeArea(),
+              const CustomSafeArea(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
@@ -113,6 +113,7 @@ class AllCases extends StatelessWidget {
                                               const ReportDetail()));
                                 },
                                 child: const StudentCard(
+                                  
                                   isResolved: false,
                                 ));
                           },
@@ -197,16 +198,17 @@ class StudentCard extends StatelessWidget {
   const StudentCard({
     super.key,
     required this.isResolved,
+    this.fullname = "John Paul",
   });
   final bool isResolved;
+  final String fullname;
   @override
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
         const CircleAvatar(
           radius: 30,
-          backgroundImage: AssetImage(
-              'assets/images/student.jpg'), // Replace with your image path
+          child: Text("JP"), // Replace with your image path
         ),
         const SizedBox(width: 20),
         Expanded(
@@ -214,9 +216,9 @@ class StudentCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const Text(
-                'John Paul',
-                style: TextStyle(
+              Text(
+                fullname,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
