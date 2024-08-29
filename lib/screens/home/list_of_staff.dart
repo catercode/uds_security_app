@@ -11,7 +11,7 @@ import 'package:uds_security_app/screens/home/dashboard.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
 import 'package:uds_security_app/screens/student/components/reportCase.dart';
 import 'package:uds_security_app/screens/student/profile.dart';
-import 'package:uds_security_app/services/staff/staff_services.dart';
+import 'package:uds_security_app/services/staffAndStudent/staff_services.dart';
 
 class AllStaff extends StatefulWidget {
   const AllStaff({super.key});
@@ -42,7 +42,7 @@ class _AllStaffState extends State<AllStaff> with WidgetsBindingObserver {
     setState(() {
       isLoading = true;
     });
-    await staffServices.getAllStaff().then((data) {
+    await staffServices.getAllStaff(status: "Staff").then((data) {
       data.fold(
         (failure) {
           log(failure);
@@ -215,7 +215,7 @@ class _AllStaffState extends State<AllStaff> with WidgetsBindingObserver {
                             width: 16,
                           ),
                           ActivityCard(
-                            icon: Icons.person,
+                            icon: Icons.person_3,
                             title: "FEMALES",
                             value: femaleCount.toString(),
                           )
@@ -242,7 +242,6 @@ class _AllStaffState extends State<AllStaff> with WidgetsBindingObserver {
                         child: isLoading
                             ? const Center(
                                 child: SpinKitFadingCircle(
-                                size: 30,
                                 color: Colors.green,
                               ))
                             : listofStaff.isEmpty

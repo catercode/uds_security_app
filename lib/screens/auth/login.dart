@@ -42,11 +42,18 @@ class _LoginPageState extends State<LoginPage> {
         },
         (success) {
           ToastMessage().showToast("Login successful");
-
-          if (success.role == Position.staff.name) {
+          if (success.role == Position.staffAdmin.name) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const HomePage()),
+              MaterialPageRoute(builder: (context) => const DashboardPage()),
+            );
+            setState(() {
+              isLoading = false;
+            });
+          } else if (success.role == Position.staff.name) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const DashboardPage()),
             );
             setState(() {
               isLoading = false;
@@ -124,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: const TextStyle(
                         fontSize: 20,
                         color: Colors.white,
-                        fontWeight: FontWeight.w600),
+                        fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 50),
                   Container(

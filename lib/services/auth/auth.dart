@@ -61,6 +61,24 @@ class AuthServices {
     }
   }
 
+  Future<Either<String, bool>> updateGuard({
+    required String userid,
+    required String unit,
+  }) async {
+    try {
+      log("8------------- : $userid");
+      await _firestore
+          .collection('users')
+          .doc(userid)
+          .update({'unitAssigned': unit});
+
+      return const Right(true);
+    } catch (e) {
+      log("Failed to update password : $e");
+      return const Right(false);
+    }
+  }
+
   Future<Either<String, bool>> resetPassword({
     required String userid,
     required String password,
@@ -85,13 +103,14 @@ class AuthServices {
           .where('email', isEqualTo: email)
           .get();
       final data = querySnapshot.docs;
-      final userid = data.first.id;
 
-      if (userid.isNotEmpty) {
+      if (data.isNotEmpty) {
         log("====data==${data.first.id}");
+        final userid = data.first.id;
 
         return Right(userid);
       } else {
+        final userid = data.first.id;
         return Right(userid);
       }
     } catch (e) {

@@ -20,9 +20,11 @@ UnitModel _$UnitModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$UnitModel {
-  String? get id => throw _privateConstructorUsedError;
-  String? get name => throw _privateConstructorUsedError;
+  String? get unitId => throw _privateConstructorUsedError;
+  String? get unitName => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
+  String? get date => throw _privateConstructorUsedError;
+  String? get status => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -35,7 +37,12 @@ abstract class $UnitModelCopyWith<$Res> {
   factory $UnitModelCopyWith(UnitModel value, $Res Function(UnitModel) then) =
       _$UnitModelCopyWithImpl<$Res, UnitModel>;
   @useResult
-  $Res call({String? id, String? name, String? location});
+  $Res call(
+      {String? unitId,
+      String? unitName,
+      String? location,
+      String? date,
+      String? status});
 }
 
 /// @nodoc
@@ -51,22 +58,32 @@ class _$UnitModelCopyWithImpl<$Res, $Val extends UnitModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? name = freezed,
+    Object? unitId = freezed,
+    Object? unitName = freezed,
     Object? location = freezed,
+    Object? date = freezed,
+    Object? status = freezed,
   }) {
     return _then(_value.copyWith(
-      id: freezed == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
+      unitId: freezed == unitId
+          ? _value.unitId
+          : unitId // ignore: cast_nullable_to_non_nullable
               as String?,
-      name: freezed == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
+      unitName: freezed == unitName
+          ? _value.unitName
+          : unitName // ignore: cast_nullable_to_non_nullable
               as String?,
       location: freezed == location
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
+              as String?,
+      date: freezed == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as String?,
+      status: freezed == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
   }
@@ -80,7 +97,12 @@ abstract class _$$UnitModelImplCopyWith<$Res>
       __$$UnitModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String? id, String? name, String? location});
+  $Res call(
+      {String? unitId,
+      String? unitName,
+      String? location,
+      String? date,
+      String? status});
 }
 
 /// @nodoc
@@ -94,22 +116,32 @@ class __$$UnitModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? name = freezed,
+    Object? unitId = freezed,
+    Object? unitName = freezed,
     Object? location = freezed,
+    Object? date = freezed,
+    Object? status = freezed,
   }) {
     return _then(_$UnitModelImpl(
-      id: freezed == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
+      unitId: freezed == unitId
+          ? _value.unitId
+          : unitId // ignore: cast_nullable_to_non_nullable
               as String?,
-      name: freezed == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
+      unitName: freezed == unitName
+          ? _value.unitName
+          : unitName // ignore: cast_nullable_to_non_nullable
               as String?,
       location: freezed == location
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
+              as String?,
+      date: freezed == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as String?,
+      status: freezed == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
@@ -118,21 +150,26 @@ class __$$UnitModelImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$UnitModelImpl implements _UnitModel {
-  _$UnitModelImpl({this.id, this.name, this.location});
+  _$UnitModelImpl(
+      {this.unitId, this.unitName, this.location, this.date, this.status});
 
   factory _$UnitModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UnitModelImplFromJson(json);
 
   @override
-  final String? id;
+  final String? unitId;
   @override
-  final String? name;
+  final String? unitName;
   @override
   final String? location;
+  @override
+  final String? date;
+  @override
+  final String? status;
 
   @override
   String toString() {
-    return 'UnitModel(id: $id, name: $name, location: $location)';
+    return 'UnitModel(unitId: $unitId, unitName: $unitName, location: $location, date: $date, status: $status)';
   }
 
   @override
@@ -140,15 +177,19 @@ class _$UnitModelImpl implements _UnitModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UnitModelImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name) &&
+            (identical(other.unitId, unitId) || other.unitId == unitId) &&
+            (identical(other.unitName, unitName) ||
+                other.unitName == unitName) &&
             (identical(other.location, location) ||
-                other.location == location));
+                other.location == location) &&
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.status, status) || other.status == status));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, location);
+  int get hashCode =>
+      Object.hash(runtimeType, unitId, unitName, location, date, status);
 
   @JsonKey(ignore: true)
   @override
@@ -166,19 +207,25 @@ class _$UnitModelImpl implements _UnitModel {
 
 abstract class _UnitModel implements UnitModel {
   factory _UnitModel(
-      {final String? id,
-      final String? name,
-      final String? location}) = _$UnitModelImpl;
+      {final String? unitId,
+      final String? unitName,
+      final String? location,
+      final String? date,
+      final String? status}) = _$UnitModelImpl;
 
   factory _UnitModel.fromJson(Map<String, dynamic> json) =
       _$UnitModelImpl.fromJson;
 
   @override
-  String? get id;
+  String? get unitId;
   @override
-  String? get name;
+  String? get unitName;
   @override
   String? get location;
+  @override
+  String? get date;
+  @override
+  String? get status;
   @override
   @JsonKey(ignore: true)
   _$$UnitModelImplCopyWith<_$UnitModelImpl> get copyWith =>

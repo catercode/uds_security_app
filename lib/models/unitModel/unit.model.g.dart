@@ -8,14 +8,18 @@ part of 'unit.model.dart';
 
 _$UnitModelImpl _$$UnitModelImplFromJson(Map<String, dynamic> json) =>
     _$UnitModelImpl(
-      id: json['id'] as String?,
-      name: json['name'] as String?,
+      unitId: json['unitId'] as String?,
+      unitName: json['unitName'] as String?,
       location: json['location'] as String?,
+      date: json['date'] as String?,
+      status: json['status'] as String?,
     );
 
 Map<String, dynamic> _$$UnitModelImplToJson(_$UnitModelImpl instance) =>
     <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
+      'unitId': instance.unitId,
+      'unitName': instance.unitName,
       'location': instance.location,
+      'date': instance.date,
+      'status': instance.status,
     };

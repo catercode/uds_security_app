@@ -6,9 +6,11 @@ part 'unit.model.g.dart';
 @freezed
 class UnitModel with _$UnitModel {
   factory UnitModel({
-    String? id,
-    String? name,
+    String? unitId,
+    String? unitName,
     String? location,
+    String? date,
+    String? status,
   }) = _UnitModel;
 
   factory UnitModel.fromJson(Map<String, dynamic> json) =>

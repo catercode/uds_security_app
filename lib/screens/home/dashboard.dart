@@ -1,22 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uds_security_app/screens/home/all_cases.dart';
 import 'package:uds_security_app/screens/home/list_of_guards.dart';
 import 'package:uds_security_app/screens/home/list_of_staff.dart';
 import 'package:uds_security_app/screens/student/components/reportCase.dart';
-import 'package:uds_security_app/screens/home/sort.dart';
+import 'package:uds_security_app/screens/home/security_groups_screen.dart';
 import 'package:uds_security_app/screens/student/list_of_student.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
 import 'package:uds_security_app/screens/student/profile.dart';
+import 'package:uds_security_app/services/staffAndStudent/staff_services.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class DashboardPage extends StatefulWidget {
+  const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  final staffServices = StaffServices();
+
+  int totalStaff = 0;
+  int totalStudent = 0;
+  bool statLoading = false;
+
+  @override
+  initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      getTotal("Staff");
+      getTotal("Student");
+    });
+    super.initState();
+  }
+
+  getTotal(String status) async {
+    setState(() {
+      statLoading = true;
+    });
+    await staffServices.getAllStaff(status: status).then((data) {
+      data.fold(
+        (failure) {
+          ToastMessage().showToast(failure);
+          setState(() {
+            statLoading = false;
+            totalStaff = 0;
+          });
+        },
+        (staffData) {
+          setState(() {
+            if (status == "Staff") {
+              totalStaff = staffData.length;
+            } else if (status == "Student") {
+              totalStudent = staffData.length;
+            }
+
+            statLoading = false;
+          });
+        },
+      );
+      // if (mounted) {
+
+      // }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
+      
       body: Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
@@ -53,27 +107,27 @@ class HomePage extends StatelessWidget {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  ListTile(
+                                  StausTile(
+                                    status: "Add Hostel",
                                     onTap: () {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
                                         builder: (context) => const AllGuard(),
                                       ));
                                     },
-                                    title: const Text(
-                                      "Security Guards",
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.green),
-                                    ),
-                                    trailing: const Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 20,
-                                      color: Colors.green,
-                                    ),
                                   ),
-                                  ListTile(
+                                  
+                                  StausTile(
+                                    status: "Security Guards",
+                                    onTap: () {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => const AllGuard(),
+                                      ));
+                                    },
+                                  ),
+                                  StausTile(
+                                    status: " Duty Schedule",
                                     onTap: () {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
@@ -81,18 +135,6 @@ class HomePage extends StatelessWidget {
                                             const SecurityGroupsScreen(),
                                       ));
                                     },
-                                    title: const Text(
-                                      "Duty Schedule",
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.green),
-                                    ),
-                                    trailing: const Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 20,
-                                      color: Colors.green,
-                                    ),
                                   )
                                 ],
                               ),
@@ -141,10 +183,11 @@ class HomePage extends StatelessWidget {
                                         builder: (context) => const AllStaff(),
                                       ));
                                 },
-                                child: const ActivityCard(
+                                child: ActivityCard(
                                   icon: Icons.person_4,
                                   title: "STAFF",
-                                  value: "10",
+                                  isLoading: statLoading,
+                                  value: totalStaff.toString(),
                                 ),
                               ),
                               const SizedBox(
@@ -159,10 +202,11 @@ class HomePage extends StatelessWidget {
                                             const AllStudent(),
                                       ));
                                 },
-                                child: const ActivityCard(
+                                child: ActivityCard(
                                   icon: Icons.person,
+                                  isLoading: statLoading,
                                   title: "STUDENT",
-                                  value: "5",
+                                  value: totalStudent.toString(),
                                 ),
                               )
                             ],
@@ -181,7 +225,8 @@ class HomePage extends StatelessWidget {
                                         builder: (context) => const AllCases(),
                                       ));
                                 },
-                                child: const ActivityCard(
+                                child: ActivityCard(
+                                  isLoading: statLoading,
                                   icon: Icons.report_problem_outlined,
                                   title: "CASES",
                                   value: "10",
@@ -198,8 +243,9 @@ class HomePage extends StatelessWidget {
                                         builder: (context) => const AllStaff(),
                                       ));
                                 },
-                                child: const ActivityCard(
+                                child: ActivityCard(
                                   icon: Icons.ac_unit,
+                                  isLoading: statLoading,
                                   title: "RESOLVED",
                                   value: "5",
                                 ),
@@ -278,11 +324,13 @@ class ActivityCard extends StatelessWidget {
       {super.key,
       required this.title,
       required this.value,
+      this.isLoading = false,
       this.mainAxisAlignment = MainAxisAlignment.start,
       required this.icon});
   final String title;
   final String value;
   final IconData icon;
+  final bool isLoading;
   final MainAxisAlignment mainAxisAlignment;
   @override
   Widget build(BuildContext context) {
@@ -294,7 +342,7 @@ class ActivityCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
-        mainAxisAlignment:mainAxisAlignment,
+        mainAxisAlignment: mainAxisAlignment,
         children: [
           CircleAvatar(
             backgroundColor: Colors.green,
@@ -318,12 +366,19 @@ class ActivityCard extends StatelessWidget {
                     fontWeight: FontWeight.w900,
                     color: Colors.black),
               ),
-              Text(
-                value,
-                style: const TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.green),
+              Visibility(
+                visible: !isLoading,
+                replacement: const Center(
+                    child: SpinKitFadingCircle(
+                  color: Colors.green,
+                )),
+                child: Text(
+                  value,
+                  style: const TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.green),
+                ),
               ),
             ],
           ),

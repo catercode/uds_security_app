@@ -6,7 +6,9 @@ part 'user.model.g.dart';
 @freezed
 class UserModel with _$UserModel {
   factory UserModel(
-      {String? firstName,
+      {
+        String? id,
+        String? firstName,
       String? middleName,
       String? lastName,
       String? phone,
@@ -20,6 +22,7 @@ class UserModel with _$UserModel {
       String? status,
       String? gender,
       String? userId,
+      String? unitAssigned,
      
       String? password}) = _UserModel;
 

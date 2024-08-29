@@ -8,6 +8,11 @@ import 'package:responsive_framework/responsive_wrapper.dart';
 import 'package:uds_security_app/screens/home/dashboard.dart';
 import 'package:uds_security_app/screens/home/list_of_staff.dart';
 
+/// The main entry point of the application.
+///
+/// Initializes the Flutter engine, sets up Firebase, and runs the app.
+///
+/// Returns: None
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
@@ -20,8 +25,8 @@ void main() async {
   } else {
     await Firebase.initializeApp();
   }
-  await Hive.initFlutter();
-  await Hive.openBox('securityGroups');
+  await Hive.initFlutter(); // Initialize Hive locally storage
+  await Hive.openBox('securityGroups'); // Open the securityGroups box
   runApp(const MyApp());
 }
 
@@ -49,7 +54,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const DashboardPage(),
     );
   }
 }
