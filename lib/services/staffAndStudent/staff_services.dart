@@ -1,61 +1,36 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
+import 'package:uds_security_app/models/caseModel/case.model.dart';
 import 'package:uds_security_app/models/unitModel/unit.model.dart';
 import 'package:uds_security_app/models/userModel/user.model.dart';
 
 class StaffServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  // Future<Either<String, UserModel>> login(
-  //     {required String sid, required String password}) async {
-  //   try {
-  //     final QuerySnapshot querySnapshot = await _firestore
-  //         .collection('users')
-  //         .where('userId', isEqualTo: sid)
-  //         .where('password', isEqualTo: password)
-  //         .get();
-  //     final data = querySnapshot.docs;
-
-  //     if (data.isNotEmpty) {
-  //       final user =
-  //           UserModel.fromJson(data.first.data() as Map<String, dynamic>);
-
-  //       return Right(user);
-  //     } else {
-  //       return const Left("Invalid Credentials");
-  //     }
-  //   } catch (e) {
-  //     log("Failed to login: $e");
-  //     return const Left("Please check your internet connection");
-  //     // TODO
-  //   }
-  // }
-
-  // Future<bool> logout() async {
-  //   return true;
-  // }
 
   Future<Either<String?, bool>> addNewStaff({required UserModel user}) async {
     try {
       await _firestore.collection("users").add({
-        "userId": user.userId,
-        "firstName": user.firstName,
-        "lastName": user.lastName,
-        "phone": user.phone,
-        "email": user.email,
-        "role": user.role,
-        "address": user.address,
+        "userId": user.userId ?? "",
+        "firstName": user.firstName ?? "",
+        "lastName": user.lastName ?? "",
+        "phone": user.phone ?? "",
+        "email": user.email ?? "",
+        "unitId": user.unitId ?? "",
+        "role": user.role ?? "",
+        "address": user.address ?? "",
         "date": DateTime.now().toString(),
         "status": "Active",
-        "hostile": user.hostile,
-        "department": user.department,
-        "faculty": user.faculty,
-        "gender": user.gender,
-        "middleName": user.middleName,
+        "hostile": user.hostile ?? "",
+        "department": user.department ?? "",
+        "faculty": user.faculty ?? "",
+        "gender": user.gender ?? "",
+        "middleName": user.middleName ?? "",
         "password": "USDS@123",
-        "unitAssigned": user.unitAssigned,
+        "rank": user.rank ?? "",
+        "unitAssigned": "Not Assigned",
       });
+      log("Guard created successfully");
       return const Right(true);
     } catch (e) {
       log("Failed to create staff: $e");
@@ -85,51 +60,90 @@ class StaffServices {
     try {
       final QuerySnapshot? querySnapshot;
 
+      final List<UserModel> listOfUsers = [];
+
       if (status == "All") {
         querySnapshot = await _firestore.collection('users').get();
       } else {
         querySnapshot = await _firestore
             .collection('users')
             .where('role', isEqualTo: status)
-            .where('unitAssigned', isEqualTo: '')
-            .where('unitAssigned', isEqualTo: null)
+            .where('unitAssigned', isEqualTo: "Not Assigned")
             .get();
       }
 
-      final List<UserModel> listOfUsers = [];
-
       for (var item in querySnapshot.docs) {
-        final itemData = item.data() as Map<String, dynamic>;
+        final staffData = item.data() as Map<String, dynamic>;
 
         final userModel = UserModel(
           id: item.id,
-          firstName: itemData['firstName'],
-          middleName: itemData['middleName'],
-          lastName: itemData['lastName'],
-          phone: itemData['phone'],
-          email: itemData['email'],
-          role: itemData['role'],
-          department: itemData['department'],
-          faculty: itemData['faculty'],
-          address: itemData['address'],
-          hostile: itemData['hostile'],
-          date: itemData['date'],
-          status: itemData['status'],
-          gender: itemData['gender'],
-          userId: itemData['userId'],
-          password: itemData['password'],
-          unitAssigned: itemData['unitAssigned'],
+          firstName: staffData['firstName'],
+          middleName: staffData['middleName'],
+          lastName: staffData['lastName'],
+          phone: staffData['phone'],
+          email: staffData['email'],
+          role: staffData['role'],
+          department: staffData['department'],
+          faculty: staffData['faculty'],
+          address: staffData['address'],
+          hostile: staffData['hostile'],
+          date: staffData['date'],
+          status: staffData['status'],
+          gender: staffData['gender'],
+          userId: staffData['userId'],
+          password: staffData['password'],
+          rank: staffData['rank'],
+          unitAssigned: staffData['unitAssigned'],
         );
 
         listOfUsers.add(userModel);
       }
-      //  log("====dta==$listOfUsers");
 
       // Return a success message or appropriate data
       return Right(listOfUsers);
     } catch (e) {
       log("====Error==$e");
       return const Left("Failed to retrieve user data.");
+    }
+  }
+
+  Future<Either<String, UserModel>> getGuardById({required String id}) async {
+    log(id);
+    try {
+      // Fetch the document with the provided id.
+      final querySnapshot = await _firestore
+          .collection('users')
+          .where("userId", isEqualTo: id)
+          .get();
+
+      final staffData = querySnapshot.docs.first.data();
+
+      final userModel = UserModel(
+        id: staffData["id"],
+        firstName: staffData['firstName'],
+        middleName: staffData['middleName'],
+        lastName: staffData['lastName'],
+        phone: staffData['phone'],
+        email: staffData['email'],
+        role: staffData['role'],
+        department: staffData['department'],
+        faculty: staffData['faculty'],
+        address: staffData['address'],
+        hostile: staffData['hostile'],
+        date: staffData['date'],
+        status: staffData['status'],
+        gender: staffData['gender'],
+        userId: staffData['userId'],
+        password: staffData['password'],
+        rank: staffData['rank'],
+        unitAssigned: staffData['unitAssigned'],
+      );
+
+      return Right(userModel);
+    } catch (e) {
+      log("Exception occurred: $e");
+      //  return const Left("User not found");
+      return const Left("Something went wrong");
     }
   }
 
@@ -150,33 +164,32 @@ class StaffServices {
       final List<UserModel> listOfUsers = [];
 
       for (var item in querySnapshot.docs) {
-        final itemData = item.data() as Map<String, dynamic>;
+        final staffData = item.data() as Map<String, dynamic>;
 
         final userModel = UserModel(
           id: item.id,
-          firstName: itemData['firstName'],
-          middleName: itemData['middleName'],
-          lastName: itemData['lastName'],
-          phone: itemData['phone'],
-          email: itemData['email'],
-          role: itemData['role'],
-          department: itemData['department'],
-          faculty: itemData['faculty'],
-          address: itemData['address'],
-          hostile: itemData['hostile'],
-          date: itemData['date'],
-          status: itemData['status'],
-          gender: itemData['gender'],
-          userId: itemData['userId'],
-          password: itemData['password'],
-          unitAssigned: itemData['unitAssigned'],
+          firstName: staffData['firstName'],
+          middleName: staffData['middleName'],
+          lastName: staffData['lastName'],
+          phone: staffData['phone'],
+          email: staffData['email'],
+          role: staffData['role'],
+          department: staffData['department'],
+          faculty: staffData['faculty'],
+          address: staffData['address'],
+          hostile: staffData['hostile'],
+          date: staffData['date'],
+          status: staffData['status'],
+          gender: staffData['gender'],
+          userId: staffData['userId'],
+          password: staffData['password'],
+          rank: staffData['rank'],
+          unitAssigned: staffData['unitAssigned'],
         );
 
         listOfUsers.add(userModel);
       }
-      //  log("====dta==$listOfUsers");
 
-      // Return a success message or appropriate data
       return Right(listOfUsers);
     } catch (e) {
       log("====Error==$e");
@@ -195,8 +208,6 @@ class StaffServices {
       final userid = data.first.id;
 
       if (userid.isNotEmpty) {
-        // log("====data==${data.first.id}");
-
         return Right(userid);
       } else {
         return Right(userid);
@@ -207,11 +218,13 @@ class StaffServices {
     }
   }
 
-  Future<Either<String, int>> getStaffByGender({required String gender}) async {
+  Future<Either<String, int>> getStaffByGender(
+      {required String gender}) async {
     try {
       final QuerySnapshot querySnapshot = await _firestore
           .collection('users')
           .where('gender', isEqualTo: gender)
+          .where('role', isEqualTo: 'staff')
           .get();
       final data = querySnapshot.docs;
 
@@ -267,79 +280,36 @@ class StaffServices {
     }
   }
 
-  Future<Either<String, List<UnitModel>>> getUnits() async {
+  Future<Either<String?, bool>> reportCase({required CaseModel issues}) async {
     try {
-      QuerySnapshot? querySnapshot;
-      List<UnitModel> listOfUnits = [];
-      querySnapshot = await _firestore.collection('units').get();
-
-      for (var item in querySnapshot.docs) {
-        final itemData = item.data() as Map<String, dynamic>;
-
-        final unitModel = UnitModel(
-          unitId: item.id,
-          unitName: itemData['unitName'],
-          location: itemData['location'],
-          date: itemData['date'],
-          status: itemData['status'],
-        );
-        listOfUnits.add(unitModel);
-      }
-      return Right(listOfUnits);
-    } catch (e) {
-      return const Left("Failed to retrieve units");
-    }
-  }
-
-  Future<Either<String, List<UserModel>>> getUnitsGaurds(unitid) async {
-    try {
-      final snapshot = await _firestore
-          .collection('units')
-          .doc(unitid)
-          .collection('guards')
-          .get();
-      final reasons =
-          snapshot.docs.map((doc) => UserModel.fromJson(doc.data())).toList();
-
-      return Right(reasons);
-    } catch (e) {
-      return const Left("Failed to retrieve units");
-    }
-  }
-
-  Future<Either<String?, bool>> addNewUnit({required UnitModel unit}) async {
-    try {
-      await _firestore.collection("units").add({
-        "unitId": unit.unitId,
-        "unitName": unit.unitName,
+      await _firestore.collection("cases").add({
+        "level": issues.level,
+        "securityAssign": "Not Assigned",
+        "statement": issues.statement,
+        "status": issues.status,
+        "studentId": issues.studentId,
         "date": DateTime.now().toString(),
-        "location": unit.location,
-        "status": "enable",
       });
+
       return const Right(true);
     } catch (e) {
-      log("Failed to create unit: $e");
-      return const Left("Failed to create unit");
+      log("Failed to create case: $e");
+      return const Left("Failed to create user");
       // TODO
     }
   }
 
-  Future<Either<String, bool>> assignedGuard(
-      {required UnitModel unit, required UserModel guard}) async {
+  Stream<DocumentSnapshot>? studentNiotification({required String newPost}) {
     try {
-      final user = guard.copyWith(unitAssigned: unit.unitName);
-
-      final save = await _firestore
-          .collection('units')
-          .doc(unit.unitId)
-          .collection('guards')
-          .add(user.toJson());
-
-      log("unit Added==========$save");
-      return const Right(true);
-    } on Exception catch (e) {
-      log("=======Exception==========$e");
-      return const Left("Failed to create unit");
+      final data = _firestore
+          .collection('users')
+          .where('securityAssign', isNotEqualTo: newPost)
+          .snapshots()
+          .map((snapshot) => snapshot.docs.first);
+      return data;
+    } catch (e) {
+      log("====================$e");
+      return null;
     }
   }
 }

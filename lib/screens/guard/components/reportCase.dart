@@ -35,10 +35,6 @@ class _ReportCaseState extends State<ReportCase> {
           .showToast("Select a case or draft your case before submit");
       return;
     }
-    if (_levelController.text.isEmpty) {
-      ToastMessage().showToast("Select the level of your case before submit");
-      return;
-    }
     try {
       setState(() {
         isLoading = true;
@@ -47,7 +43,7 @@ class _ReportCaseState extends State<ReportCase> {
           level: _levelController.text,
           statement: _issueController.text,
           quickReport: _quickReportController.text,
-          studentId: widget.student.userId);
+          studentId: widget.student.id);
 
       final result = await staffServices.reportCase(issues: userModel);
       result.fold(
@@ -359,19 +355,18 @@ class ThreatStatus extends StatelessWidget {
 }
 
 class StausTile extends StatelessWidget {
-  const StausTile(
-      {super.key, required this.status, this.onTap, this.color = Colors.green});
+  const StausTile({super.key, required this.status, this.onTap, this.color = Colors.green});
   final String status;
   final VoidCallback? onTap;
   final Color color;
-
+  
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(
         status,
-        style:
-            TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: color),
+        style:  TextStyle(
+            fontSize: 18, fontWeight: FontWeight.w600, color:color),
       ),
       onTap: onTap ??
           () {
@@ -380,7 +375,7 @@ class StausTile extends StatelessWidget {
               status,
             );
           },
-      trailing: Icon(
+      trailing:  Icon(
         Icons.arrow_forward_ios,
         size: 18,
         color: color,

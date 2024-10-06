@@ -1,19 +1,33 @@
+import 'dart:async';
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:uds_security_app/const/enums/func.dart';
+import 'package:uds_security_app/models/Notification/notification.api.dart';
+import 'package:uds_security_app/models/userModel/user.model.dart';
+import 'package:uds_security_app/models/userModel/user.model.dart';
+import 'package:uds_security_app/screens/auth/login.dart';
 import 'package:uds_security_app/screens/home/all_cases.dart';
-import 'package:uds_security_app/screens/home/list_of_guards.dart';
+import 'package:uds_security_app/screens/home/security_guards.dart';
 import 'package:uds_security_app/screens/home/list_of_staff.dart';
 import 'package:uds_security_app/screens/student/components/reportCase.dart';
-import 'package:uds_security_app/screens/home/security_groups_screen.dart';
+import 'package:uds_security_app/screens/home/duty_schedule_screen.dart';
 import 'package:uds_security_app/screens/student/list_of_student.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
 import 'package:uds_security_app/screens/student/profile.dart';
+import 'package:uds_security_app/services/auth/hive_auth_user.dart';
+import 'package:uds_security_app/services/case/cases_services.dart';
 import 'package:uds_security_app/services/staffAndStudent/staff_services.dart';
 
+import '../../models/caseModel/case.model.dart';
+
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  final UserModel currentUser;
+  const DashboardPage({super.key, required this.currentUser});
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -21,20 +35,64 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   final staffServices = StaffServices();
+  final caseServices = CaseServices();
 
+  CaseModel? caseNotiModel;
+  HiveAuthServices hiveAuthServices = HiveAuthServices();
+  // NoticationApi noticationApi = NoticationApi();
   int totalStaff = 0;
   int totalStudent = 0;
   bool statLoading = false;
+  List<CaseModel> listofCases = [];
+  StreamSubscription<DocumentSnapshot>? _subscription;
 
   @override
   initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      getTotal("Staff");
-      getTotal("Student");
+      _listenToNotificationStream();
+      loadCases();
     });
     super.initState();
   }
 
+  void _listenToNotificationStream() {
+    final stream = caseServices.adminNiotification(
+      reporterId: widget.currentUser.userId!,
+    );
+
+    if (stream != null) {
+      _subscription = stream.listen((snapshot) {
+        if (snapshot.exists) {
+          var document = snapshot.data() as Map<String, dynamic>;
+
+          caseNotiModel = CaseModel.fromJson(document);
+
+          if (!listofCases.contains(caseNotiModel)) {
+            setState(() {
+              listofCases.add(caseNotiModel!);
+            });
+          }
+          NotificationService.showInstantNotification(
+            title: "Case report",
+            body: caseNotiModel?.quickReport ?? '',
+          );
+        }
+      });
+    } else {
+      // Handle the case where the stream is null
+      log('The guardNotification stream is null. Cannot listen for notifications.');
+    }
+  }
+
+  @override
+  void dispose() {
+    _subscription
+        ?.cancel(); // Cancel the stream subscription when the widget is disposed
+    super.dispose();
+  }
+
+  int totalResolvecases = 0;
+  int totalUnResolvecases = 0;
   getTotal(String status) async {
     setState(() {
       statLoading = true;
@@ -50,9 +108,9 @@ class _DashboardPageState extends State<DashboardPage> {
         },
         (staffData) {
           setState(() {
-            if (status == "Staff") {
+            if (status == "staff") {
               totalStaff = staffData.length;
-            } else if (status == "Student") {
+            } else if (status == "student") {
               totalStudent = staffData.length;
             }
 
@@ -66,11 +124,83 @@ class _DashboardPageState extends State<DashboardPage> {
     });
   }
 
+  bool isLoading = false;
+  loadCases() async {
+    setState(() {
+      isLoading = true;
+    });
+    getTotal("staff");
+    getTotal("student");
+    getTotalCases("false");
+    getTotalCases("true");
+    await caseServices.getAllCases(status: "All").then((data) {
+      data.fold(
+        (failure) {
+          log(failure);
+          ToastMessage().showToast(failure);
+          setState(() {
+            isLoading = false;
+          });
+        },
+        (data) {
+          setState(() {
+            listofCases = data;
+
+            isLoading = false;
+          });
+        },
+      );
+      // if (mounted) {
+
+      // }
+    });
+  }
+
+  getTotalCases(String status) async {
+    setState(() {
+      statLoading = true;
+    });
+    await caseServices.getCasesCount(status: status).then((data) {
+      data.fold(
+        (failure) {
+          ToastMessage().showToast(failure);
+          setState(() {
+            statLoading = false;
+            totalStaff = 0;
+          });
+        },
+        (caseData) {
+          setState(() {
+            setState(() {
+              if (status == "false") {
+                totalUnResolvecases = caseData;
+              } else if (status == "true") {
+                totalResolvecases = caseData;
+              }
+              statLoading = false;
+            });
+          });
+        },
+      );
+      // if (mounted) {
+
+      // }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          loadCases();
+        },
+        child: const Icon(
+          Icons.refresh,
+          size: 30,
+        ),
+      ),
       body: Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
@@ -107,16 +237,15 @@ class _DashboardPageState extends State<DashboardPage> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  StausTile(
-                                    status: "Add Hostel",
-                                    onTap: () {
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                        builder: (context) => const AllGuard(),
-                                      ));
-                                    },
-                                  ),
-                                  
+                                  // StausTile(
+                                  //   status: "Add Units",
+                                  //   onTap: () {
+                                  //     // Navigator.of(context)
+                                  //     //     .push(MaterialPageRoute(
+                                  //     //   builder: (context) => const AllGuard(),
+                                  //     // ));
+                                  //   },
+                                  // ),
                                   StausTile(
                                     status: "Security Guards",
                                     onTap: () {
@@ -135,7 +264,18 @@ class _DashboardPageState extends State<DashboardPage> {
                                             const SecurityGroupsScreen(),
                                       ));
                                     },
-                                  )
+                                  ),
+                                  StausTile(
+                                    status: "Logout",
+                                    color: Colors.red,
+                                    onTap: () async {
+                                      hiveAuthServices.clearHive();
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => const LoginPage(),
+                                      ));
+                                    },
+                                  ),
                                 ],
                               ),
                             );
@@ -222,14 +362,17 @@ class _DashboardPageState extends State<DashboardPage> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const AllCases(),
+                                        builder: (context) => AllCases(
+                                          status: "false",
+                                          currentUser: widget.currentUser,
+                                        ),
                                       ));
                                 },
                                 child: ActivityCard(
                                   isLoading: statLoading,
                                   icon: Icons.report_problem_outlined,
                                   title: "CASES",
-                                  value: "10",
+                                  value: totalUnResolvecases.toString(),
                                 ),
                               ),
                               const SizedBox(
@@ -240,14 +383,17 @@ class _DashboardPageState extends State<DashboardPage> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const AllStaff(),
+                                        builder: (context) => AllCases(
+                                          status: "true",
+                                          currentUser: widget.currentUser,
+                                        ),
                                       ));
                                 },
                                 child: ActivityCard(
                                   icon: Icons.ac_unit,
                                   isLoading: statLoading,
                                   title: "RESOLVED",
-                                  value: "5",
+                                  value: totalResolvecases.toString(),
                                 ),
                               )
                             ],
@@ -286,21 +432,27 @@ class _DashboardPageState extends State<DashboardPage> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 8, horizontal: 16),
                         child: ListView.separated(
+                          physics: const NeverScrollableScrollPhysics(),
                           padding: const EdgeInsets.only(top: 0, bottom: 0),
                           shrinkWrap: true,
-                          itemCount: 10,
+                          itemCount: listofCases.length,
                           itemBuilder: (context, index) {
                             return InkWell(
                                 onTap: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ReportDetail()));
+                                          builder: (context) => ReportDetail(
+                                              currentUser: widget.currentUser,
+                                              cases: listofCases[index])));
                                 },
-                                child: const StudentCard(
-                                  isResolved: false,
-                                ));
+                                child: CaseCard(
+                                    caseData: listofCases[index],
+                                    isResolved:
+                                        listofCases[index].status!.toString() ==
+                                                "false"
+                                            ? false
+                                            : true));
                           },
                           separatorBuilder: (context, index) => const Divider(
                             color: Colors.grey,
@@ -324,6 +476,7 @@ class ActivityCard extends StatelessWidget {
       {super.key,
       required this.title,
       required this.value,
+      this.color = Colors.green,
       this.isLoading = false,
       this.mainAxisAlignment = MainAxisAlignment.start,
       required this.icon});
@@ -331,6 +484,7 @@ class ActivityCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final bool isLoading;
+  final Color color;
   final MainAxisAlignment mainAxisAlignment;
   @override
   Widget build(BuildContext context) {
@@ -345,7 +499,7 @@ class ActivityCard extends StatelessWidget {
         mainAxisAlignment: mainAxisAlignment,
         children: [
           CircleAvatar(
-            backgroundColor: Colors.green,
+            backgroundColor: color,
             radius: 30,
             child: Icon(
               icon,
@@ -361,10 +515,8 @@ class ActivityCard extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black),
+                style: TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.w900, color: color),
               ),
               Visibility(
                 visible: !isLoading,
@@ -394,14 +546,22 @@ class StudentCard extends StatelessWidget {
     required this.isResolved,
   });
   final bool isResolved;
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        const CircleAvatar(
+        CircleAvatar(
           radius: 30,
-          backgroundImage: AssetImage(
-              'assets/images/student.jpg'), // Replace with your image path
+          child: Text(
+            getInitials("AB"),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 20,
+              color: Colors.black,
+            ),
+          ), //
         ),
         const SizedBox(width: 20),
         Expanded(
@@ -461,6 +621,73 @@ class ToastMessage {
       backgroundColor: Colors.white,
       textColor: Colors.green,
       fontSize: 14.0,
+    );
+  }
+}
+
+class CaseCard extends StatelessWidget {
+  const CaseCard({
+    super.key,
+    required this.caseData,
+    required this.isResolved,
+  });
+  final bool isResolved;
+  final CaseModel caseData;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        CircleAvatar(
+            backgroundColor: !isResolved ? Colors.red : Colors.green,
+            radius: 30,
+            child: Icon(
+              !isResolved ? Icons.report_problem_outlined : Icons.ac_unit,
+              color: Colors.white,
+            )),
+        const SizedBox(width: 20),
+        Expanded(
+          flex: 6,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                caseData.quickReport.toString(),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                caseData.statement.toString(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
+              ),
+              Text(
+                'Priority: ${caseData.level}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.red[600],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Spacer(),
+        Text(
+          !isResolved ? 'Awaiting' : "Resolved",
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.green,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -5,11 +5,13 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:uds_security_app/const/enums/position.dart';
 import 'package:uds_security_app/screens/auth/forget_password.dart';
 import 'package:uds_security_app/screens/auth/signup.dart';
+import 'package:uds_security_app/screens/guard/guard.screen.dart';
 import 'package:uds_security_app/screens/home/dashboard.dart';
 import 'package:uds_security_app/screens/student/student.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uds_security_app/services/auth/auth.dart';
+import 'package:uds_security_app/services/auth/hive_auth_user.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _idController = TextEditingController();
   TextEditingController passController = TextEditingController();
   AuthServices authServices = AuthServices();
+  HiveAuthServices hiveAuthServices = HiveAuthServices();
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
   void _submitForm() async {
@@ -41,11 +44,12 @@ class _LoginPageState extends State<LoginPage> {
           }),
         },
         (success) {
+          hiveAuthServices.saveCurrentUser(user: success);
           ToastMessage().showToast("Login successful");
           if (success.role == Position.staffAdmin.name) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const DashboardPage()),
+              MaterialPageRoute(builder: (context) =>  DashboardPage(currentUser:success)),
             );
             setState(() {
               isLoading = false;
@@ -53,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
           } else if (success.role == Position.staff.name) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const DashboardPage()),
+              MaterialPageRoute(builder: (context) =>  DashboardPage( currentUser:success)),
             );
             setState(() {
               isLoading = false;
@@ -61,7 +65,16 @@ class _LoginPageState extends State<LoginPage> {
           } else if (success.role == Position.student.name) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const StudentHome()),
+              MaterialPageRoute(builder: (context) =>  StudentHome(student:success)),
+            );
+
+            setState(() {
+              isLoading = false;
+            });
+          } else if (success.role == Position.guard.name) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) =>  GaurdHome(currentUser: success,)),
             );
 
             setState(() {
@@ -271,8 +284,8 @@ class _LoginPageState extends State<LoginPage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          const SignupScreen()));
+                                    builder: (context) => const SignupScreen(),
+                                  ));
                             },
                             child: const Text(
                               "Create Account",

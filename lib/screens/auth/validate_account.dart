@@ -14,6 +14,8 @@ class ValidateUserScreen extends StatefulWidget {
   final String password;
   final String address;
   final String middleName;
+  final String gender;
+  final String rank;
 
   final String phone;
 
@@ -21,6 +23,8 @@ class ValidateUserScreen extends StatefulWidget {
       {super.key,
       required this.firstName,
       required this.lastName,
+      required this.gender,
+      required this.rank,
       required this.email,
       required this.password,
       required this.address,
@@ -55,8 +59,11 @@ class _ValidateUserScreenState extends State<ValidateUserScreen> {
         firstName: widget.firstName,
         lastName: widget.lastName,
         email: widget.email,
+        gender: widget.gender,
         password: widget.password,
         address: widget.address,
+        unitAssigned: "Not Assigned",
+        rank: "",
         middleName: widget.middleName,
       );
       final result = await authServices.register(user: userModel);

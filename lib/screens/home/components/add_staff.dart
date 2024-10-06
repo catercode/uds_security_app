@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
+import 'package:uds_security_app/const/enums/position.dart';
 import 'package:uds_security_app/models/userModel/user.model.dart';
 import 'package:uds_security_app/screens/home/dashboard.dart';
 import 'package:uds_security_app/screens/student/components/reportCase.dart';
@@ -54,7 +55,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
           middleName: _middleNameController.text,
           phone: _phoneController.text,
           gender: _genderController.text,
-          role: "Staff",
+          role: Position.staff.name,
           department: _deptController.text);
 
       final result = await staffServices.addNewStaff(user: userModel);

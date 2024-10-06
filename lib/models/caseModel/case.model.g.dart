@@ -12,8 +12,9 @@ _$CaseModelImpl _$$CaseModelImplFromJson(Map<String, dynamic> json) =>
       studentId: json['studentId'] as String?,
       level: json['level'] as String?,
       statement: json['statement'] as String?,
+      quickReport: json['quickReport'] as String?,
       date: json['date'] as String?,
-      status: json['status'] as bool?,
+      status: json['status'] as String?,
       securityAssign: json['securityAssign'] as String?,
     );
 
@@ -23,6 +24,7 @@ Map<String, dynamic> _$$CaseModelImplToJson(_$CaseModelImpl instance) =>
       'studentId': instance.studentId,
       'level': instance.level,
       'statement': instance.statement,
+      'quickReport': instance.quickReport,
       'date': instance.date,
       'status': instance.status,
       'securityAssign': instance.securityAssign,

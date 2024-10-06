@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:uds_security_app/screens/auth/validate_account.dart';
+import 'package:uds_security_app/screens/guard/components/reportCase.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -20,6 +21,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
+  List<String> gender = ["Male", "Female"];
 
   @override
   void dispose() {
@@ -189,13 +192,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                               ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your middle name';
-                                }
-
-                                return null;
-                              },
                             ),
                             const SizedBox(
                               height: 16,
@@ -215,6 +211,73 @@ class _SignupScreenState extends State<SignupScreen> {
                               decoration: InputDecoration(
                                 hintText: 'Last Name',
                                 filled: true,
+                                fillColor: Colors.white.withOpacity(0.8),
+                                hintStyle: const TextStyle(fontSize: 18),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please confirm your last name';
+                                }
+
+                                return null;
+                              },
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            const Text(
+                              'Gender',
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            TextFormField(
+                              controller: _genderController,
+                              readOnly: true,
+                              decoration: InputDecoration(
+                                hintText: 'Gender',
+                                filled: true,
+                                suffixIcon: InkWell(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        isScrollControlled: true,
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return CustomerModalSheet(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                ...List.generate(
+                                                  gender.length,
+                                                  (index) {
+                                                    return StausTile(
+                                                      status: gender[index],
+                                                      onTap: () {
+                                                        setState(() {
+                                                          _genderController
+                                                                  .text =
+                                                              gender[index];
+                                                        });
+                                                        Navigator.pop(context);
+                                                      },
+                                                    );
+                                                  },
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: const Icon(Icons.arrow_drop_down)),
                                 fillColor: Colors.white.withOpacity(0.8),
                                 hintStyle: const TextStyle(fontSize: 18),
                                 border: OutlineInputBorder(
@@ -401,12 +464,15 @@ class _SignupScreenState extends State<SignupScreen> {
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     ValidateUserScreen(
+                                                      rank: "",
                                                       firstName:
                                                           _firstNameController
                                                               .text,
                                                       lastName:
                                                           _lastNameController
                                                               .text,
+                                                      gender: _genderController
+                                                          .text,
                                                       email:
                                                           _emailController.text,
                                                       password:

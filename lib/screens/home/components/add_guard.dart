@@ -1,5 +1,15 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
+import 'package:uds_security_app/const/enums/position.dart';
+import 'package:uds_security_app/models/unitModel/unit.model.dart';
+import 'package:uds_security_app/models/userModel/user.model.dart';
+import 'package:uds_security_app/screens/home/dashboard.dart';
+import 'package:uds_security_app/screens/student/components/reportCase.dart';
+import 'package:uds_security_app/services/security/units_services.dart';
+import 'package:uds_security_app/services/staffAndStudent/staff_services.dart';
 
 class AddGuardScreen extends StatefulWidget {
   const AddGuardScreen({super.key});
@@ -10,28 +20,121 @@ class AddGuardScreen extends StatefulWidget {
 
 class _AddGuardScreenState extends State<AddGuardScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _middleNameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
+  final TextEditingController _userIdController = TextEditingController();
+  final TextEditingController _rankController = TextEditingController();
+  StaffServices staffServices = StaffServices();
+  final unitServices = UnitServices();
+  final TextEditingController _unitNameController = TextEditingController();
+  List<String> gender = ["Male", "Female"];
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
+    _middleNameController.dispose();
+    _phoneController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _userIdController.dispose();
+    _unitNameController.dispose();
+
     super.dispose();
   }
 
-  void _submitForm() {
-    if (_formKey.currentState?.validate() ?? false) {
-      // Perform signup action (e.g., send data to server)
-      print("Name: ${_nameController.text}");
-      print("Email: ${_emailController.text}");
-      print("Password: ${_passwordController.text}");
+  void clearTextFields() {
+    _emailController.clear();
+    _userIdController.clear();
+    _firstNameController.clear();
+    _lastNameController.clear();
+    _phoneController.clear();
+    _genderController.clear();
+    _unitNameController.clear();
+  }
+
+  void _submitForm() async {
+    try {
+      if (_formKey.currentState!.validate()) {
+        setState(() {
+          isLoading = true;
+        });
+        final userModel = UserModel(
+          rank: _rankController.text,
+          userId: _userIdController.text,
+          firstName: _firstNameController.text,
+          lastName: _lastNameController.text,
+          email: _emailController.text,
+          middleName: _middleNameController.text,
+          phone: _phoneController.text,
+          gender: _genderController.text,
+          role: Position.guard.name,
+        );
+
+        final result = await staffServices.addNewStaff(user: userModel);
+        result.fold(
+          (failure) {
+            ToastMessage().showToast(failure!);
+            setState(() {
+              isLoading = false;
+            });
+          },
+          (verified) {
+            if (verified) {
+              ToastMessage().showToast("Guard added successfully");
+              setState(() {
+                isLoading = false;
+              });
+              clearTextFields();
+            } else {
+              ToastMessage().showToast("Failed to add guard");
+              setState(() {
+                isLoading = false;
+              });
+            }
+          },
+        );
+      }
+    } catch (e) {
+      log("==========================$e");
+      ToastMessage().showToast("Something went wrong try again");
     }
+  }
+
+  @override
+  void initState() {
+    loadUnits();
+    super.initState();
+  }
+
+  bool isLoading = false;
+  UnitModel userId = UnitModel();
+  List<UnitModel> listofUnit = [];
+  loadUnits() async {
+    setState(() {
+      isLoading = true;
+    });
+    await unitServices.getUnits().then((data) {
+      data.fold(
+        (failure) {
+          ToastMessage().showToast(failure);
+          setState(() {
+            isLoading = false;
+          });
+        },
+        (data) {
+          setState(() {
+            listofUnit = data;
+            isLoading = false;
+          });
+        },
+      );
+      // if (mounted) {
+
+      // }
+    });
   }
 
   @override
@@ -97,7 +200,7 @@ class _AddGuardScreenState extends State<AddGuardScreen> {
                         height: 8,
                       ),
                       TextFormField(
-                        controller: _nameController,
+                        controller: _userIdController,
                         decoration: InputDecoration(
                           hintText: 'Staff ID',
                           filled: true,
@@ -111,7 +214,7 @@ class _AddGuardScreenState extends State<AddGuardScreen> {
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your name';
+                            return 'Please enter your staff id';
                           }
                           return null;
                         },
@@ -130,7 +233,7 @@ class _AddGuardScreenState extends State<AddGuardScreen> {
                         height: 8,
                       ),
                       TextFormField(
-                        controller: _emailController,
+                        controller: _firstNameController,
                         decoration: InputDecoration(
                           hintText: 'First Name',
                           filled: true,
@@ -143,11 +246,9 @@ class _AddGuardScreenState extends State<AddGuardScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
+                            return 'Please enter your first name';
                           }
-                          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                            return 'Please enter a valid email';
-                          }
+
                           return null;
                         },
                       ),
@@ -165,7 +266,7 @@ class _AddGuardScreenState extends State<AddGuardScreen> {
                         height: 8,
                       ),
                       TextFormField(
-                        controller: _passwordController,
+                        controller: _middleNameController,
                         decoration: InputDecoration(
                           hintText: 'Middle Namae',
                           filled: true,
@@ -176,14 +277,11 @@ class _AddGuardScreenState extends State<AddGuardScreen> {
                             borderSide: BorderSide.none,
                           ),
                         ),
-                        obscureText: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
+                            return 'Please enter your middle name';
                           }
-                          if (value.length < 6) {
-                            return 'Password must be at least 6 characters long';
-                          }
+
                           return null;
                         },
                       ),
@@ -201,7 +299,7 @@ class _AddGuardScreenState extends State<AddGuardScreen> {
                         height: 8,
                       ),
                       TextFormField(
-                        controller: _confirmPasswordController,
+                        controller: _lastNameController,
                         decoration: InputDecoration(
                           hintText: 'Last Name',
                           filled: true,
@@ -212,14 +310,11 @@ class _AddGuardScreenState extends State<AddGuardScreen> {
                             borderSide: BorderSide.none,
                           ),
                         ),
-                        obscureText: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please confirm your password';
+                            return 'Please confirm your last name';
                           }
-                          if (value != _passwordController.text) {
-                            return 'Passwords do not match';
-                          }
+
                           return null;
                         },
                       ),
@@ -234,7 +329,7 @@ class _AddGuardScreenState extends State<AddGuardScreen> {
                             color: Colors.black),
                       ),
                       TextFormField(
-                        controller: _confirmPasswordController,
+                        controller: _phoneController,
                         decoration: InputDecoration(
                           hintText: 'Phone Number',
                           filled: true,
@@ -245,13 +340,9 @@ class _AddGuardScreenState extends State<AddGuardScreen> {
                             borderSide: BorderSide.none,
                           ),
                         ),
-                        obscureText: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please confirm your password';
-                          }
-                          if (value != _passwordController.text) {
-                            return 'Passwords do not match';
+                            return 'Please enter your phone number';
                           }
                           return null;
                         },
@@ -260,7 +351,7 @@ class _AddGuardScreenState extends State<AddGuardScreen> {
                         height: 16,
                       ),
                       const Text(
-                        'Unit',
+                        'Gender',
                         style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w600,
@@ -270,9 +361,72 @@ class _AddGuardScreenState extends State<AddGuardScreen> {
                         height: 8,
                       ),
                       TextFormField(
-                        controller: _confirmPasswordController,
+                        controller: _genderController,
+                        readOnly: true,
                         decoration: InputDecoration(
-                          hintText: 'Unit',
+                          hintText: 'Gender',
+                          filled: true,
+                          suffixIcon: InkWell(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  isScrollControlled: true,
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return CustomerModalSheet(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          ...List.generate(
+                                            gender.length,
+                                            (index) {
+                                              return StausTile(
+                                                status: gender[index],
+                                                onTap: () {
+                                                  setState(() {
+                                                    _genderController.text =
+                                                        gender[index];
+                                                  });
+                                                  Navigator.pop(context);
+                                                },
+                                              );
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              child: const Icon(Icons.arrow_drop_down)),
+                          fillColor: Colors.white.withOpacity(0.8),
+                          hintStyle: const TextStyle(fontSize: 18),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please confirm your last name';
+                          }
+
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      const Text(
+                        'Rank',
+                        style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black),
+                      ),
+                      TextFormField(
+                        controller: _rankController,
+                        decoration: InputDecoration(
+                          hintText: 'Rank',
                           filled: true,
                           fillColor: Colors.white.withOpacity(0.8),
                           hintStyle: const TextStyle(fontSize: 18),
@@ -281,31 +435,103 @@ class _AddGuardScreenState extends State<AddGuardScreen> {
                             borderSide: BorderSide.none,
                           ),
                         ),
-                        obscureText: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please confirm your password';
-                          }
-                          if (value != _passwordController.text) {
-                            return 'Passwords do not match';
+                            return 'Please enter your phone number';
                           }
                           return null;
                         },
                       ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      // const Text(
+                      //   'Unit',
+                      //   style: TextStyle(
+                      //       fontSize: 22,
+                      //       fontWeight: FontWeight.w600,
+                      //       color: Colors.black),
+                      // ),
+                      // const SizedBox(
+                      //   height: 8,
+                      // ),
+                      // TextFormField(
+                      //   controller: _unitNameController,
+                      //   readOnly: true,
+                      //   decoration: InputDecoration(
+                      //     hintText: 'Unit',
+                      //     filled: true,
+                      //     fillColor: Colors.white.withOpacity(0.8),
+                      //     hintStyle: const TextStyle(fontSize: 18),
+                      //     border: OutlineInputBorder(
+                      //       borderRadius: BorderRadius.circular(30),
+                      //       borderSide: BorderSide.none,
+                      //     ),
+                      //     suffixIcon: InkWell(
+                      //         onTap: () {
+                      //           showModalBottomSheet(
+                      //             isScrollControlled: true,
+                      //             context: context,
+                      //             builder: (BuildContext context) {
+                      //               return CustomerModalSheet(
+                      //                 child: Column(
+                      //                   mainAxisSize: MainAxisSize.min,
+                      //                   children: <Widget>[
+                      //                     ...List.generate(
+                      //                       listofUnit.length,
+                      //                       (index) {
+                      //                         return StausTile(
+                      //                           status: listofUnit[index]
+                      //                               .unitName!,
+                      //                           onTap: () {
+                      //                             setState(() {
+                      //                               _unitNameController.text =
+                      //                                   listofUnit[index]
+                      //                                       .unitName!;
+                      //                               userId =
+                      //                                   listofUnit[index];
+                      //                             });
+                      //                             Navigator.pop(context);
+                      //                           },
+                      //                         );
+                      //                       },
+                      //                     )
+                      //                   ],
+                      //                 ),
+                      //               );
+                      //             },
+                      //           );
+                      //         },
+                      //         child: const Icon(Icons.arrow_drop_down)),
+                      //   ),
+                      //   validator: (value) {
+                      //     if (value == null || value.isEmpty) {
+                      //       return 'Please select a unit';
+                      //     }
+
+                      //     return null;
+                      //   },
+                      // ),
                       const SizedBox(height: 60),
-                      ElevatedButton(
-                        style: const ButtonStyle(
-                            backgroundColor:
-                                WidgetStatePropertyAll(Colors.green)),
-                        onPressed: _submitForm,
-                        child: const Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Text(
-                            'Add',
-                            style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white),
+                      Visibility(
+                        visible: !isLoading,
+                        replacement: const SpinKitFadingCircle(
+                          color: Colors.green,
+                        ),
+                        child: ElevatedButton(
+                          style: const ButtonStyle(
+                              backgroundColor:
+                                  WidgetStatePropertyAll(Colors.green)),
+                          onPressed: _submitForm,
+                          child: const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Text(
+                              "Add",
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white),
+                            ),
                           ),
                         ),
                       ),

@@ -24,8 +24,9 @@ mixin _$CaseModel {
   String? get studentId => throw _privateConstructorUsedError;
   String? get level => throw _privateConstructorUsedError;
   String? get statement => throw _privateConstructorUsedError;
+  String? get quickReport => throw _privateConstructorUsedError;
   String? get date => throw _privateConstructorUsedError;
-  bool? get status => throw _privateConstructorUsedError;
+  String? get status => throw _privateConstructorUsedError;
   String? get securityAssign => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -44,8 +45,9 @@ abstract class $CaseModelCopyWith<$Res> {
       String? studentId,
       String? level,
       String? statement,
+      String? quickReport,
       String? date,
-      bool? status,
+      String? status,
       String? securityAssign});
 }
 
@@ -66,6 +68,7 @@ class _$CaseModelCopyWithImpl<$Res, $Val extends CaseModel>
     Object? studentId = freezed,
     Object? level = freezed,
     Object? statement = freezed,
+    Object? quickReport = freezed,
     Object? date = freezed,
     Object? status = freezed,
     Object? securityAssign = freezed,
@@ -87,6 +90,10 @@ class _$CaseModelCopyWithImpl<$Res, $Val extends CaseModel>
           ? _value.statement
           : statement // ignore: cast_nullable_to_non_nullable
               as String?,
+      quickReport: freezed == quickReport
+          ? _value.quickReport
+          : quickReport // ignore: cast_nullable_to_non_nullable
+              as String?,
       date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
@@ -94,7 +101,7 @@ class _$CaseModelCopyWithImpl<$Res, $Val extends CaseModel>
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as bool?,
+              as String?,
       securityAssign: freezed == securityAssign
           ? _value.securityAssign
           : securityAssign // ignore: cast_nullable_to_non_nullable
@@ -116,8 +123,9 @@ abstract class _$$CaseModelImplCopyWith<$Res>
       String? studentId,
       String? level,
       String? statement,
+      String? quickReport,
       String? date,
-      bool? status,
+      String? status,
       String? securityAssign});
 }
 
@@ -136,6 +144,7 @@ class __$$CaseModelImplCopyWithImpl<$Res>
     Object? studentId = freezed,
     Object? level = freezed,
     Object? statement = freezed,
+    Object? quickReport = freezed,
     Object? date = freezed,
     Object? status = freezed,
     Object? securityAssign = freezed,
@@ -157,6 +166,10 @@ class __$$CaseModelImplCopyWithImpl<$Res>
           ? _value.statement
           : statement // ignore: cast_nullable_to_non_nullable
               as String?,
+      quickReport: freezed == quickReport
+          ? _value.quickReport
+          : quickReport // ignore: cast_nullable_to_non_nullable
+              as String?,
       date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
@@ -164,7 +177,7 @@ class __$$CaseModelImplCopyWithImpl<$Res>
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as bool?,
+              as String?,
       securityAssign: freezed == securityAssign
           ? _value.securityAssign
           : securityAssign // ignore: cast_nullable_to_non_nullable
@@ -181,6 +194,7 @@ class _$CaseModelImpl implements _CaseModel {
       this.studentId,
       this.level,
       this.statement,
+      this.quickReport,
       this.date,
       this.status,
       this.securityAssign});
@@ -197,15 +211,17 @@ class _$CaseModelImpl implements _CaseModel {
   @override
   final String? statement;
   @override
+  final String? quickReport;
+  @override
   final String? date;
   @override
-  final bool? status;
+  final String? status;
   @override
   final String? securityAssign;
 
   @override
   String toString() {
-    return 'CaseModel(id: $id, studentId: $studentId, level: $level, statement: $statement, date: $date, status: $status, securityAssign: $securityAssign)';
+    return 'CaseModel(id: $id, studentId: $studentId, level: $level, statement: $statement, quickReport: $quickReport, date: $date, status: $status, securityAssign: $securityAssign)';
   }
 
   @override
@@ -219,6 +235,8 @@ class _$CaseModelImpl implements _CaseModel {
             (identical(other.level, level) || other.level == level) &&
             (identical(other.statement, statement) ||
                 other.statement == statement) &&
+            (identical(other.quickReport, quickReport) ||
+                other.quickReport == quickReport) &&
             (identical(other.date, date) || other.date == date) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.securityAssign, securityAssign) ||
@@ -228,7 +246,7 @@ class _$CaseModelImpl implements _CaseModel {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id, studentId, level, statement,
-      date, status, securityAssign);
+      quickReport, date, status, securityAssign);
 
   @JsonKey(ignore: true)
   @override
@@ -250,8 +268,9 @@ abstract class _CaseModel implements CaseModel {
       final String? studentId,
       final String? level,
       final String? statement,
+      final String? quickReport,
       final String? date,
-      final bool? status,
+      final String? status,
       final String? securityAssign}) = _$CaseModelImpl;
 
   factory _CaseModel.fromJson(Map<String, dynamic> json) =
@@ -266,9 +285,11 @@ abstract class _CaseModel implements CaseModel {
   @override
   String? get statement;
   @override
+  String? get quickReport;
+  @override
   String? get date;
   @override
-  bool? get status;
+  String? get status;
   @override
   String? get securityAssign;
   @override

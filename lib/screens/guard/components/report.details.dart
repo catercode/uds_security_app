@@ -9,7 +9,6 @@ import 'package:uds_security_app/models/userModel/user.model.dart';
 import 'package:uds_security_app/screens/home/dashboard.dart';
 import 'package:uds_security_app/screens/student/components/reportCase.dart';
 import 'package:uds_security_app/services/auth/hive_auth_user.dart';
-import 'package:uds_security_app/services/case/cases_services.dart';
 import 'package:uds_security_app/services/staffAndStudent/staff_services.dart';
 
 class ReportDetail extends StatefulWidget {
@@ -25,12 +24,8 @@ class ReportDetail extends StatefulWidget {
 class _ReportDetailState extends State<ReportDetail>
     with WidgetsBindingObserver {
   final staffServices = StaffServices();
-  final caseServices = CaseServices();
   UserModel gaurd = UserModel();
   bool isLoading = false;
-  bool isMarking = false;
-  String fullName = "";
-  List<UserModel> listofStaff = [];
   HiveAuthServices hiveAuthServices = HiveAuthServices();
 
   @override
@@ -40,14 +35,13 @@ class _ReportDetailState extends State<ReportDetail>
     });
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       loadCases();
-      loadStaff();
     });
     super.initState();
   }
 
   loadCases() async {
     await staffServices
-        .getGuardById(id: widget.cases.securityAssign.toString())
+        .getGuardById(id: widget.cases.studentId.toString())
         .then((data) {
       data.fold(
         (failure) {
@@ -60,56 +54,7 @@ class _ReportDetailState extends State<ReportDetail>
         (data) {
           setState(() {
             gaurd = data;
-
-            isLoading = false;
-          });
-        },
-      );
-      // if (mounted) {
-
-      // }
-    });
-  }
-
-  markCaseCompleted(id) async {
-    setState(() {
-      isMarking = true;
-    });
-    await caseServices.markCaseCompleted(caseid: id).then((data) {
-      data.fold(
-        (failure) {
-          log(failure);
-          ToastMessage().showToast(failure);
-          setState(() {
-            isMarking = false;
-          });
-        },
-        (data) {
-          setState(() {
-            isMarking = false;
-          });
-          ToastMessage().showToast("Case mark as resolved");
-        },
-      );
-    });
-  }
-
-  loadStaff() async {
-    setState(() {
-      isLoading = true;
-    });
-    await staffServices.getAllStaff(status: "guard").then((data) {
-      data.fold(
-        (failure) {
-          log(failure);
-          ToastMessage().showToast(failure);
-          setState(() {
-            isLoading = false;
-          });
-        },
-        (data) {
-          setState(() {
-            listofStaff = data;
+            log("---------9876$gaurd");
             isLoading = false;
           });
         },
@@ -122,7 +67,6 @@ class _ReportDetailState extends State<ReportDetail>
 
   @override
   Widget build(BuildContext context) {
-    fullName = "${gaurd.firstName} ${gaurd.lastName}";
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -208,7 +152,7 @@ class _ReportDetailState extends State<ReportDetail>
                                 color: Colors.white),
                           ),
                           Text(
-                            "Lvl: ${widget.cases.level}",
+                            "Lvl: ${widget.cases.level}", 
                             style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -266,7 +210,7 @@ class _ReportDetailState extends State<ReportDetail>
                                 child: Row(
                                   children: [
                                     Text(
-                                      "Lvl: ${widget.cases.level != "" ? widget.cases.level : "Medium"}",
+                                      "Lvl: ${widget.cases.level}",
                                       style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
@@ -316,25 +260,16 @@ class _ReportDetailState extends State<ReportDetail>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Security Assigned : $fullName",
-                                maxLines: 1,
+                                "Security Assign By: ${gaurd.firstName} ${gaurd.lastName}",
                                 style: const TextStyle(
-                                    overflow: TextOverflow.ellipsis,
-                                    fontSize: 18,
+                                    fontSize: 25,
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                "Contact No : ${gaurd.phone}",
+                                "${gaurd.phone}",
                                 style: const TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                "Rank : ${gaurd.rank}",
-                                style: const TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 25,
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold),
                               ),
@@ -346,110 +281,6 @@ class _ReportDetailState extends State<ReportDetail>
                   ],
                 ),
               ),
-              if (widget.currentUser.role == Position.guard.name)
-                const SizedBox(
-                  height: 100,
-                ),
-              Visibility(
-                  visible: widget.currentUser.role == Position.guard.name
-                      ? true
-                      : false,
-                  child: Visibility(
-                    visible: !isMarking,
-                    replacement: const SpinKitFadingCircle(
-                      color: Colors.white,
-                      size: 50,
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        markCaseCompleted(widget.cases.id!);
-                      },
-                      child: const Text(
-                        "Mark As Resolved",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18),
-                      ),
-                    ),
-                  )),
-              Visibility(
-                visible: widget.currentUser.role == Position.staffAdmin.name
-                    ? true
-                    : false,
-                child: SizedBox(
-                  width: ResponsiveWrapper.of(context).scaledWidth / 2,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return CustomerModalSheet(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ...List.generate(
-                                    listofStaff.length,
-                                    (index) => InkWell(
-                                      onTap: () async {
-                                        final data = await caseServices
-                                            .assignAgentToCase(
-                                                caseid: widget.cases.id!,
-                                                gaurdName:
-                                                    "${listofStaff[index].userId}");
-
-                                        data.fold(
-                                          (failure) {
-                                            ToastMessage().showToast(
-                                                'Failed to assign guard');
-                                          },
-                                          (success) {
-                                            fullName =
-                                                '${listofStaff[index].firstName!} ${listofStaff[index].lastName!}';
-                                            ToastMessage().showToast(
-                                                '$fullName" assign to resolve the case');
-                                            setState(() {});
-                                            Navigator.pop(context);
-                                          },
-                                        );
-                                      },
-                                      child: SizedBox(
-                                        width: double.infinity,
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              "${listofStaff[index].firstName!}  ${listofStaff[index].lastName!}",
-                                              style: const TextStyle(
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                            const Divider()
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      child: const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Text(
-                          "Assign Gaurd",
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      )),
-                ),
-              ),
-              const SizedBox(
-                height: 32,
-              )
             ],
           ),
         ),

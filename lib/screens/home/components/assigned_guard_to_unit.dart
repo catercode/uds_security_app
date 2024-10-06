@@ -10,6 +10,7 @@ import 'package:uds_security_app/screens/home/dashboard.dart';
 import 'package:uds_security_app/screens/home/list_of_staff.dart';
 import 'package:uds_security_app/screens/student/components/reportCase.dart';
 import 'package:uds_security_app/services/auth/auth.dart';
+import 'package:uds_security_app/services/security/units_services.dart';
 import 'package:uds_security_app/services/staffAndStudent/staff_services.dart';
 
 class AddGuardToUnitScreen extends StatefulWidget {
@@ -27,6 +28,7 @@ class _AddGuardToUnitScreenState extends State<AddGuardToUnitScreen> {
   final TextEditingController _dateController = TextEditingController();
 
   StaffServices staffServices = StaffServices();
+  final unitServices = UnitServices();
 
   void clearTextFields() {
     _unitNameController.clear();
@@ -49,7 +51,7 @@ class _AddGuardToUnitScreenState extends State<AddGuardToUnitScreen> {
     setState(() {
       isLoading = true;
     });
-    await staffServices.getUnits().then((data) {
+    await unitServices.getUnits().then((data) {
       data.fold(
         (failure) {
           ToastMessage().showToast(failure);
@@ -76,7 +78,7 @@ class _AddGuardToUnitScreenState extends State<AddGuardToUnitScreen> {
     setState(() {
       isLoading = true;
     });
-    await staffServices.getAllGaurdNotAssigned(status: "Guard").then((data) {
+    await staffServices.getAllGaurdNotAssigned(status: "guard").then((data) {
       data.fold(
         (failure) {
           ToastMessage().showToast(failure);
@@ -157,7 +159,7 @@ class _AddGuardToUnitScreenState extends State<AddGuardToUnitScreen> {
                   controller: _unitNameController,
                   readOnly: true,
                   decoration: InputDecoration(
-                    hintText: 'Unit',
+                    hintText: 'Select unit to assign guard to.',
                     filled: true,
                     suffixIcon: Visibility(
                       visible: !isLoading,
@@ -290,6 +292,7 @@ class _GaurdInfoCardState extends State<GaurdInfoCard> {
   bool isChecked = false;
   bool isAssignLoading = false;
   final staffServices = StaffServices();
+  final unitServices = UnitServices();
   final authServices = AuthServices();
   // int femaleCount = 0;
   // int maleCount = 0;
@@ -300,7 +303,7 @@ class _GaurdInfoCardState extends State<GaurdInfoCard> {
       isAssignLoading = true;
     });
 
-    final result = await staffServices.assignedGuard(
+    final result = await unitServices.assignedGuard(
         unit: widget.unit, guard: widget.staff);
     result.fold(
       (failure) {
@@ -364,7 +367,7 @@ class _GaurdInfoCardState extends State<GaurdInfoCard> {
                     ),
                   ),
                   Text(
-                    "Senior Guard",
+                    widget.staff.rank.toString(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -380,6 +383,11 @@ class _GaurdInfoCardState extends State<GaurdInfoCard> {
             ),
             InkWell(
               onTap: () {
+                if (widget.unit.unitId == null) {
+                  ToastMessage()
+                      .showToast("Select unit before assigning guard");
+                  return;
+                }
                 setState(() {
                   isChecked = !isChecked;
                   if (isChecked == true) {

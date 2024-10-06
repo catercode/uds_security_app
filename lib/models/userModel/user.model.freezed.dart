@@ -21,6 +21,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$UserModel {
   String? get id => throw _privateConstructorUsedError;
+  String? get unitId => throw _privateConstructorUsedError;
   String? get firstName => throw _privateConstructorUsedError;
   String? get middleName => throw _privateConstructorUsedError;
   String? get lastName => throw _privateConstructorUsedError;
@@ -35,6 +36,7 @@ mixin _$UserModel {
   String? get status => throw _privateConstructorUsedError;
   String? get gender => throw _privateConstructorUsedError;
   String? get userId => throw _privateConstructorUsedError;
+  String? get rank => throw _privateConstructorUsedError;
   String? get unitAssigned => throw _privateConstructorUsedError;
   String? get password => throw _privateConstructorUsedError;
 
@@ -51,6 +53,7 @@ abstract class $UserModelCopyWith<$Res> {
   @useResult
   $Res call(
       {String? id,
+      String? unitId,
       String? firstName,
       String? middleName,
       String? lastName,
@@ -65,6 +68,7 @@ abstract class $UserModelCopyWith<$Res> {
       String? status,
       String? gender,
       String? userId,
+      String? rank,
       String? unitAssigned,
       String? password});
 }
@@ -83,6 +87,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
   @override
   $Res call({
     Object? id = freezed,
+    Object? unitId = freezed,
     Object? firstName = freezed,
     Object? middleName = freezed,
     Object? lastName = freezed,
@@ -97,6 +102,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? status = freezed,
     Object? gender = freezed,
     Object? userId = freezed,
+    Object? rank = freezed,
     Object? unitAssigned = freezed,
     Object? password = freezed,
   }) {
@@ -104,6 +110,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      unitId: freezed == unitId
+          ? _value.unitId
+          : unitId // ignore: cast_nullable_to_non_nullable
               as String?,
       firstName: freezed == firstName
           ? _value.firstName
@@ -160,6 +170,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
       userId: freezed == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      rank: freezed == rank
+          ? _value.rank
+          : rank // ignore: cast_nullable_to_non_nullable
               as String?,
       unitAssigned: freezed == unitAssigned
           ? _value.unitAssigned
@@ -183,6 +197,7 @@ abstract class _$$UserModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {String? id,
+      String? unitId,
       String? firstName,
       String? middleName,
       String? lastName,
@@ -197,6 +212,7 @@ abstract class _$$UserModelImplCopyWith<$Res>
       String? status,
       String? gender,
       String? userId,
+      String? rank,
       String? unitAssigned,
       String? password});
 }
@@ -213,6 +229,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = freezed,
+    Object? unitId = freezed,
     Object? firstName = freezed,
     Object? middleName = freezed,
     Object? lastName = freezed,
@@ -227,6 +244,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? status = freezed,
     Object? gender = freezed,
     Object? userId = freezed,
+    Object? rank = freezed,
     Object? unitAssigned = freezed,
     Object? password = freezed,
   }) {
@@ -234,6 +252,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      unitId: freezed == unitId
+          ? _value.unitId
+          : unitId // ignore: cast_nullable_to_non_nullable
               as String?,
       firstName: freezed == firstName
           ? _value.firstName
@@ -291,6 +313,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String?,
+      rank: freezed == rank
+          ? _value.rank
+          : rank // ignore: cast_nullable_to_non_nullable
+              as String?,
       unitAssigned: freezed == unitAssigned
           ? _value.unitAssigned
           : unitAssigned // ignore: cast_nullable_to_non_nullable
@@ -308,6 +334,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
 class _$UserModelImpl implements _UserModel {
   _$UserModelImpl(
       {this.id,
+      this.unitId,
       this.firstName,
       this.middleName,
       this.lastName,
@@ -322,6 +349,7 @@ class _$UserModelImpl implements _UserModel {
       this.status,
       this.gender,
       this.userId,
+      this.rank,
       this.unitAssigned,
       this.password});
 
@@ -330,6 +358,8 @@ class _$UserModelImpl implements _UserModel {
 
   @override
   final String? id;
+  @override
+  final String? unitId;
   @override
   final String? firstName;
   @override
@@ -359,13 +389,15 @@ class _$UserModelImpl implements _UserModel {
   @override
   final String? userId;
   @override
+  final String? rank;
+  @override
   final String? unitAssigned;
   @override
   final String? password;
 
   @override
   String toString() {
-    return 'UserModel(id: $id, firstName: $firstName, middleName: $middleName, lastName: $lastName, phone: $phone, email: $email, role: $role, department: $department, faculty: $faculty, address: $address, hostile: $hostile, date: $date, status: $status, gender: $gender, userId: $userId, unitAssigned: $unitAssigned, password: $password)';
+    return 'UserModel(id: $id, unitId: $unitId, firstName: $firstName, middleName: $middleName, lastName: $lastName, phone: $phone, email: $email, role: $role, department: $department, faculty: $faculty, address: $address, hostile: $hostile, date: $date, status: $status, gender: $gender, userId: $userId, rank: $rank, unitAssigned: $unitAssigned, password: $password)';
   }
 
   @override
@@ -374,6 +406,7 @@ class _$UserModelImpl implements _UserModel {
         (other.runtimeType == runtimeType &&
             other is _$UserModelImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.unitId, unitId) || other.unitId == unitId) &&
             (identical(other.firstName, firstName) ||
                 other.firstName == firstName) &&
             (identical(other.middleName, middleName) ||
@@ -392,6 +425,7 @@ class _$UserModelImpl implements _UserModel {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.gender, gender) || other.gender == gender) &&
             (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.rank, rank) || other.rank == rank) &&
             (identical(other.unitAssigned, unitAssigned) ||
                 other.unitAssigned == unitAssigned) &&
             (identical(other.password, password) ||
@@ -400,25 +434,28 @@ class _$UserModelImpl implements _UserModel {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      firstName,
-      middleName,
-      lastName,
-      phone,
-      email,
-      role,
-      department,
-      faculty,
-      address,
-      hostile,
-      date,
-      status,
-      gender,
-      userId,
-      unitAssigned,
-      password);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        id,
+        unitId,
+        firstName,
+        middleName,
+        lastName,
+        phone,
+        email,
+        role,
+        department,
+        faculty,
+        address,
+        hostile,
+        date,
+        status,
+        gender,
+        userId,
+        rank,
+        unitAssigned,
+        password
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -437,6 +474,7 @@ class _$UserModelImpl implements _UserModel {
 abstract class _UserModel implements UserModel {
   factory _UserModel(
       {final String? id,
+      final String? unitId,
       final String? firstName,
       final String? middleName,
       final String? lastName,
@@ -451,6 +489,7 @@ abstract class _UserModel implements UserModel {
       final String? status,
       final String? gender,
       final String? userId,
+      final String? rank,
       final String? unitAssigned,
       final String? password}) = _$UserModelImpl;
 
@@ -459,6 +498,8 @@ abstract class _UserModel implements UserModel {
 
   @override
   String? get id;
+  @override
+  String? get unitId;
   @override
   String? get firstName;
   @override
@@ -487,6 +528,8 @@ abstract class _UserModel implements UserModel {
   String? get gender;
   @override
   String? get userId;
+  @override
+  String? get rank;
   @override
   String? get unitAssigned;
   @override

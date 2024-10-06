@@ -1,14 +1,20 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
+import 'package:uds_security_app/const/enums/func.dart';
 import 'package:uds_security_app/models/unitModel/unit.model.dart';
 import 'package:uds_security_app/models/userModel/user.model.dart';
-import 'package:uds_security_app/screens/home/components/add_guard_to_unit.dart';
+import 'package:uds_security_app/screens/home/components/assigned_guard_to_unit.dart';
 import 'package:uds_security_app/screens/home/components/add_units.dart';
 import 'package:uds_security_app/screens/home/dashboard.dart';
 import 'package:uds_security_app/screens/student/components/reportCase.dart';
+import 'package:uds_security_app/services/auth/auth.dart';
+import 'package:uds_security_app/services/security/units_services.dart';
 import 'package:uds_security_app/services/staffAndStudent/staff_services.dart';
+
+List<UnitModel> listofUnit = [];
 
 class SecurityGroupsScreen extends StatefulWidget {
   const SecurityGroupsScreen({super.key});
@@ -19,7 +25,7 @@ class SecurityGroupsScreen extends StatefulWidget {
 
 class _SecurityGroupsScreenState extends State<SecurityGroupsScreen> {
   final staffServices = StaffServices();
-  List<UnitModel> listofUnit = [];
+  final unitServices = UnitServices();
   bool isLoading = false;
   // int femaleCount = 0;
   // int maleCount = 0;
@@ -39,17 +45,16 @@ class _SecurityGroupsScreenState extends State<SecurityGroupsScreen> {
     setState(() {
       isLoading = true;
     });
-    await staffServices.getUnits().then((data) {
+    listofUnit.clear();
+    await unitServices.getUnits().then((data) {
       data.fold(
         (failure) {
-          log("======================$failure");
           ToastMessage().showToast(failure);
           setState(() {
             isLoading = false;
           });
         },
         (data) {
-          log("======================$data");
           setState(() {
             listofUnit = data;
             isLoading = false;
@@ -185,11 +190,16 @@ class _SecurityGroupsScreenState extends State<SecurityGroupsScreen> {
                     const SizedBox()
                   ]),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: ExpansionPanelListExample(
-                  listOfUnits: listofUnit,
+            Visibility(
+              visible: !isLoading,
+              replacement:
+                  const Center(child: SpinKitFadingCircle(color: Colors.white)),
+              child: Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: ExpansionPanelListExample(
+                    listOfUnits: listofUnit,
+                  ),
                 ),
               ),
             )
@@ -209,6 +219,32 @@ class ExpansionPanelListExample extends StatefulWidget {
 }
 
 class _ExpansionPanelListExampleState extends State<ExpansionPanelListExample> {
+  // final staffServices = StaffServices();
+  // bool isLoading = false;
+  // getGuardsUnderUnits() async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //   await staffServices.getUnitsGaurds("").then((data) {
+  //     data.fold(
+  //       (failure) {
+  //         log("======================$failure");
+  //         ToastMessage().showToast(failure);
+  //         setState(() {
+  //           isLoading = false;
+  //         });
+  //       },
+  //       (data) {
+  //         log("======================$data");
+  //         setState(() {
+  //           isLoading = false;
+  //         });
+  //       },
+  //     );
+
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -239,8 +275,10 @@ class UnitExpandedTile extends StatefulWidget {
 
 class _UnitExpandedTileState extends State<UnitExpandedTile> {
   final staffServices = StaffServices();
+  final unitServices = UnitServices();
   List<UserModel> listofAssignedGuards = [];
   bool isLoading = false;
+  bool isDeleting = false;
   // int femaleCount = 0;
   // int maleCount = 0;
   bool statLoading = false;
@@ -259,7 +297,7 @@ class _UnitExpandedTileState extends State<UnitExpandedTile> {
     setState(() {
       isLoading = true;
     });
-    await staffServices.getUnitsGaurds(widget.unit.unitId).then((data) {
+    await unitServices.getUnitsGaurds(widget.unit.unitId).then((data) {
       data.fold(
         (failure) {
           log("======================$failure");
@@ -269,7 +307,6 @@ class _UnitExpandedTileState extends State<UnitExpandedTile> {
           });
         },
         (data) {
-          log("======================$data");
           setState(() {
             listofAssignedGuards = data;
             isLoading = false;
@@ -282,6 +319,30 @@ class _UnitExpandedTileState extends State<UnitExpandedTile> {
     });
   }
 
+  deleteUnit() async {
+    isDeleting = true;
+    await unitServices.deleteUnitsGuardById(id: widget.unit.unitId!).then(
+      (data) {
+        data.fold(
+          (failure) {
+            setState(() {
+              isDeleting = false;
+            });
+            ToastMessage().showToast(failure);
+          },
+          (data) async {
+            setState(() {
+              isDeleting = false;
+            });
+
+            ToastMessage().showToast("Unit deleted successfully");
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
@@ -290,9 +351,81 @@ class _UnitExpandedTileState extends State<UnitExpandedTile> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         backgroundColor: Colors.white,
         collapsedBackgroundColor: Colors.white,
-        title: Text(
-          widget.unit.unitName!,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        title: Row(
+          children: [
+            Text(
+              widget.unit.unitName!,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const Spacer(),
+            InkWell(
+              onTap: () {
+                showModalBottomSheet(
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return CustomerModalSheet(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                              "Are you sure you want to delete  ${widget.unit.unitName!} ?",
+                              style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Visibility(
+                                visible: !isDeleting,
+                                replacement: const SpinKitFadingCircle(
+                                  color: Colors.black,
+                                  size: 30,
+                                ),
+                                child: ElevatedButton(
+                                    style: const ButtonStyle(
+                                        backgroundColor: WidgetStatePropertyAll(
+                                            Colors.redAccent)),
+                                    onPressed: () {
+                                
+                                      deleteUnit();
+                                    },
+                                    child: const Text("Yes",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold))),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text(
+                                    "No",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold),
+                                  )),
+                            ],
+                          )
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+              child: const Icon(
+                Icons.delete,
+                color: Colors.red,
+              ),
+            ),
+          ],
         ),
         children: [
           SizedBox(
@@ -303,10 +436,12 @@ class _UnitExpandedTileState extends State<UnitExpandedTile> {
                   ...List.generate(
                     listofAssignedGuards.length,
                     (index) {
+                      //  log("======listofAssignedGuards================${listofAssignedGuards[index]}");
                       return Padding(
                         padding: const EdgeInsets.only(
                             bottom: 16, left: 16, right: 16),
                         child: SecurityInfoCard(
+                          oldUnit: widget.unit,
                           guard: listofAssignedGuards[index],
                         ),
                       );
@@ -323,87 +458,159 @@ class _UnitExpandedTileState extends State<UnitExpandedTile> {
 // Define a model class for each item
 
 class SecurityInfoCard extends StatefulWidget {
-  const SecurityInfoCard({super.key, required this.guard});
+  const SecurityInfoCard({super.key, this.oldUnit, required this.guard});
   final UserModel guard;
+  final UnitModel? oldUnit;
   @override
   State<SecurityInfoCard> createState() => _SecurityInfoCardState();
 }
 
 class _SecurityInfoCardState extends State<SecurityInfoCard> {
-  @override
-  bool _isExpanded = false;
+  final bool _isExpanded = false;
+  String indexId = "";
+  bool isLoading = false;
+
+  bool assignLoading = false;
+  final staffServices = StaffServices();
+  final unitServices = UnitServices();
+  final authServices = AuthServices();
+
+  reasignGuard({required UnitModel newUnit}) async {
+    setState(() {
+      assignLoading = true;
+    });
+    indexId = widget.guard.userId!;
+    // ToastMessage().showToast("Guard reasigned successfully");
+    await unitServices
+        .reasignGuard(
+            newUnit: newUnit, oldUnit: widget.oldUnit!, guard: widget.guard)
+        .then((data) {
+      data.fold(
+        (failure) {
+          setState(() {
+            assignLoading = false;
+            indexId = "";
+          });
+          ToastMessage().showToast(failure);
+        },
+        (data) async {
+          await authServices.updateGuard(
+              userid: widget.guard.id!, unit: newUnit.unitName!);
+          setState(() {
+            assignLoading = false;
+            indexId = "";
+          });
+          ToastMessage().showToast("Guard reasigned successfully");
+        },
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        const CircleAvatar(
+        CircleAvatar(
           radius: 30,
-          backgroundImage: AssetImage(
-              'assets/images/student.jpg'), // Replace with your image path
+          child: Text(
+            getInitials("${widget.guard.firstName} ${widget.guard.lastName}"),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 20,
+              color: Colors.black,
+            ),
+          ),
         ),
         const SizedBox(width: 20),
         Expanded(
           flex: 6,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const Text(
-                'John Paul',
-                style: TextStyle(
+            children: [
+              Text(
+                "${widget.guard.firstName!} ${widget.guard.lastName!}",
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
-                'A1 Unit',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
+                widget.guard.rank.toString(),
+                style: const TextStyle(
+                  fontSize: 18,
                 ),
               ),
             ],
           ),
         ),
-        const Column(
-          children: [
-            Text(
-              'Rank',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+        // const Column(
+        //   children: [],
+        // ),
+        // const SizedBox(
+        //   width: 16,
+        // ),
+        Visibility(
+          visible: true,
+          child: InkWell(
+            onTap: () {
+              log("======listofAssignedGuards==$indexId==============${widget.guard.userId}");
+              showModalBottomSheet(
+                isScrollControlled: true,
+                context: context,
+                builder: (BuildContext context) {
+                  return CustomerModalSheet(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        ...List.generate(
+                          listofUnit.length,
+                          (index) {
+                            return StausTile(
+                              status: listofUnit[index].unitName!,
+                              onTap: () async {
+                                await reasignGuard(newUnit: listofUnit[index]);
+                                // setState(() {});
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        )
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+            child: Visibility(
+              visible: indexId != widget.guard.userId,
+              replacement: const SpinKitFadingCircle(
+                color: Colors.black,
+                size: 30,
               ),
-            ),
-            Text(
-              'Rk001',
-              style: TextStyle(
-                fontSize: 18,
+              child: const Row(
+                children: [
+                  Icon(
+                    Icons.info,
+                    color: Color.fromARGB(255, 0, 0, 0),
+                  ),
+                  Text(
+                    'Action',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-        const SizedBox(
-          width: 16,
-        ),
-        InkWell(
-          onTap: () {
-            setState(() {
-              _isExpanded = !_isExpanded;
-            });
-          },
-          child: Visibility(
-            visible: !_isExpanded,
-            replacement: const Icon(
-              Icons.radio_button_checked_outlined,
-              size: 40,
-            ),
-            child: const Icon(
-              Icons.radio_button_off_outlined,
-              size: 40,
             ),
           ),
-        )
+        ),
+
+        const SizedBox(
+          width: 10,
+        ),
       ],
     );
   }

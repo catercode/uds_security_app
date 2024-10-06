@@ -42,7 +42,7 @@ class _AllStaffState extends State<AllStaff> with WidgetsBindingObserver {
     setState(() {
       isLoading = true;
     });
-    await staffServices.getAllStaff(status: "Staff").then((data) {
+    await staffServices.getAllStaff(status: "staff").then((data) {
       data.fold(
         (failure) {
           log(failure);
@@ -339,7 +339,9 @@ class StudentInfoCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    staff.department.toString(),
+                    staff.department.toString() != ""
+                        ? staff.department.toString()
+                        : "N/A",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

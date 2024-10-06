@@ -43,7 +43,7 @@ class _AllStudentState extends State<AllStudent> {
     setState(() {
       isLoading = true;
     });
-    await staffServices.getAllStaff(status: "student").then((data) {
+    await staffServices.getAllStaff(status: "Student").then((data) {
       data.fold(
         (failure) {
           log(failure);
@@ -70,7 +70,7 @@ class _AllStudentState extends State<AllStudent> {
       statLoading = true;
     });
     await staffServices
-        .getStudentByGender(gender: gender, role: "student")
+        .getStudentByGender(gender: gender, role: "Student")
         .then((data) {
       data.fold(
         (failure) {

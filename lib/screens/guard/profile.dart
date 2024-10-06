@@ -1,20 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
-import 'package:uds_security_app/const/enums/func.dart';
 import 'package:uds_security_app/models/userModel/user.model.dart';
-import 'package:uds_security_app/screens/auth/login.dart';
-import 'package:uds_security_app/services/auth/hive_auth_user.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   final UserModel profile;
   const ProfileScreen({super.key, required this.profile});
-
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  HiveAuthServices hiveAuthServices = HiveAuthServices();
 
   @override
   Widget build(BuildContext context) {
@@ -96,16 +86,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(
                         height: 16,
                       ),
-                      Stack(
+                      const Stack(
                         children: [
                           CircleAvatar(
                             radius: 50,
-                            child: Text(
-                                style: const TextStyle(fontSize: 30),
-                                getInitials(
-                                    "${widget.profile.firstName} ${widget.profile.lastName}")), // Replace with your image path
+                            backgroundImage: AssetImage(
+                                'assets/images/student.jpg'), // Replace with your image path
                           ),
-                          const Positioned(
+                          Positioned(
                               bottom: 0,
                               right: 0,
                               child: CircleAvatar(
@@ -119,13 +107,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           //SizedBox.shrink(),
                           Text(
-                            "${widget.profile.firstName!} ${widget.profile.lastName!}",
-                            style: const TextStyle(
+                            'Evelyn Mac',
+                            style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
@@ -165,10 +153,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Column(
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: <Widget>[
                               ProfileText(
@@ -178,10 +166,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ProfileText(
                                 text: "Phone :",
                               ),
-                              // CustomSizedBox(),
-                              // ProfileText(
-                              //   text: "Age :",
-                              // ),
+                              CustomSizedBox(),
+                              ProfileText(
+                                text: "Age :",
+                              ),
                               CustomSizedBox(),
                               ProfileText(
                                 text: "Gender",
@@ -194,8 +182,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ProfileText(
                                 text: "Foculty :",
                               ),
-                              // CustomSizedBox(),
-                              // ProfileText(text: "Entry Year :"),
+                              CustomSizedBox(),
+                              ProfileText(text: "Entry Year :"),
                               CustomSizedBox(),
                               ProfileText(text: "Hostile :"),
                               CustomSizedBox(),
@@ -205,65 +193,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               ProfileText(
-                                text: widget.profile.email != ""
-                                    ? widget.profile.email!
-                                    : "N/a",
+                                text: "student@example.com",
                               ),
-                              const CustomSizedBox(),
+                              CustomSizedBox(),
                               ProfileText(
-                                text: widget.profile.phone != ""
-                                    ? widget.profile.phone!
-                                    : "N/a",
+                                text: "+123456789",
                               ),
-                              // const CustomSizedBox(),
-                              // const ProfileText(
-                              //   text: "26",
-                              // ),
-                              const CustomSizedBox(),
+                              CustomSizedBox(),
                               ProfileText(
-                                text: widget.profile.gender != ""
-                                    ? widget.profile.gender!
-                                    : "N/a",
+                                text: "26",
                               ),
-                              const CustomSizedBox(),
+                              CustomSizedBox(),
                               ProfileText(
-                                text: widget.profile.address != ""
-                                    ? widget.profile.address!
-                                    : "N/a",
+                                text: "Female",
                               ),
-                              const CustomSizedBox(),
+                              CustomSizedBox(),
                               ProfileText(
-                                text: widget.profile.faculty != ""
-                                    ? widget.profile.faculty!
-                                    : "N/a",
+                                text: "Address: 123 Main Street",
                               ),
-                              // const CustomSizedBox(),
-                              // const ProfileText(
-                              //   text: "2017",
-                              // ),
-                              const CustomSizedBox(),
+                              CustomSizedBox(),
                               ProfileText(
-                                  text: widget.profile.hostile != ""
-                                      ? widget.profile.hostile!
-                                      : "N/a"),
-                              const CustomSizedBox(),
+                                text: "MPHIL CHD",
+                              ),
+                              CustomSizedBox(),
+                              ProfileText(
+                                text: "2017",
+                              ),
+                              CustomSizedBox(),
+                              ProfileText(text: "Home Girl"),
+                              CustomSizedBox(),
                             ],
                           ),
                         ],
-                      ),
-                      const CustomSizedBox(),
-                      const CustomSizedBox(),
-                      InkWell(
-                        onTap: () {
-                          hiveAuthServices.clearHive();
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const LoginPage(),
-                          ));
-                        },
-                        child: const Text(
-                          "Logout",
-                          style: TextStyle(color: Colors.red, fontSize: 20),
-                        ),
                       ),
                     ],
                   ),

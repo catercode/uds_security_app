@@ -7,8 +7,9 @@ part 'user.model.g.dart';
 class UserModel with _$UserModel {
   factory UserModel(
       {
-        String? id,
-        String? firstName,
+      String? id,
+      String? unitId,
+      String? firstName,
       String? middleName,
       String? lastName,
       String? phone,
@@ -22,10 +23,11 @@ class UserModel with _$UserModel {
       String? status,
       String? gender,
       String? userId,
+      String? rank,
       String? unitAssigned,
      
       String? password}) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
+      _$UserModelFromJson(json);  
 }

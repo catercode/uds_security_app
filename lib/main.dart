@@ -3,18 +3,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:uds_security_app/screens/auth/login.dart';
+import 'package:uds_security_app/models/Notification/notification.api.dart';
+import 'package:uds_security_app/screens/auth/checking_user.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
-import 'package:uds_security_app/screens/home/dashboard.dart';
-import 'package:uds_security_app/screens/home/list_of_staff.dart';
+import 'package:timezone/timezone.dart' as tz;
 
-/// The main entry point of the application.
-///
-/// Initializes the Flutter engine, sets up Firebase, and runs the app.
-///
-/// Returns: None
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.init();
+  
   if (kIsWeb) {
     await Firebase.initializeApp(
         options: const FirebaseOptions(
@@ -27,6 +24,7 @@ void main() async {
   }
   await Hive.initFlutter(); // Initialize Hive locally storage
   await Hive.openBox('securityGroups'); // Open the securityGroups box
+  await Hive.openBox('loginUser');
   runApp(const MyApp());
 }
 
@@ -54,7 +52,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const DashboardPage(),
+      home: const ValidationUser(),
+      // home: DashboardPage(
+      //   user: UserModel(),
+      // ),
+      //home: StudentHome(student: UserModel(),),
     );
   }
 }

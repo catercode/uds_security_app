@@ -1,49 +1,48 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-
+import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:responsive_framework/responsive_wrapper.dart';
 import 'package:uds_security_app/models/userModel/user.model.dart';
-import 'package:uds_security_app/screens/home/components/StaffDetail/staff.detail.dart';
-import 'package:uds_security_app/screens/student/components/add_student.dart';
+import 'package:uds_security_app/screens/home/components/add_guard.dart';
+import 'package:uds_security_app/screens/home/components/add_staff.dart';
 import 'package:uds_security_app/screens/home/dashboard.dart';
-import 'package:uds_security_app/screens/home/security_guards.dart';
-import 'package:uds_security_app/screens/home/list_of_staff.dart';
-import 'package:uds_security_app/screens/student/components/reportCase.dart';
+import 'package:uds_security_app/screens/home/duty_schedule_screen.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
+import 'package:uds_security_app/screens/student/components/reportCase.dart';
 import 'package:uds_security_app/screens/student/profile.dart';
 import 'package:uds_security_app/services/staffAndStudent/staff_services.dart';
 
-class AllStudent extends StatefulWidget {
-  const AllStudent({super.key});
+class AllGuard extends StatefulWidget {
+  const AllGuard({super.key});
 
   @override
-  State<AllStudent> createState() => _AllStudentState();
+  State<AllGuard> createState() => _AllGuardState();
 }
 
-class _AllStudentState extends State<AllStudent> {
+class _AllGuardState extends State<AllGuard> {
   final staffServices = StaffServices();
   List<UserModel> listofStaff = [];
   bool isLoading = false;
-  int femaleCount = 0;
-  int maleCount = 0;
+  int dataCount = 0;
+
   bool statLoading = false;
 
   @override
   initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      loadStaff();
-      getTotal("Female");
-      getTotal("Male");
+      loadGuard();
+      getTotal("guard");
     });
     super.initState();
   }
 
-  loadStaff() async {
+  loadGuard() async {
     setState(() {
       isLoading = true;
     });
-    await staffServices.getAllStaff(status: "student").then((data) {
+    await staffServices.getAllStaff(status: "guard").then((data) {
       data.fold(
         (failure) {
           log(failure);
@@ -54,9 +53,10 @@ class _AllStudentState extends State<AllStudent> {
         },
         (data) {
           setState(() {
-            listofStaff = data;
             isLoading = false;
+            listofStaff = data;
           });
+          getTotal("guard");
         },
       );
       // if (mounted) {
@@ -65,36 +65,27 @@ class _AllStudentState extends State<AllStudent> {
     });
   }
 
-  getTotal(String gender) async {
+  getTotal(String role) async {
     setState(() {
       statLoading = true;
     });
-    await staffServices
-        .getStudentByGender(gender: gender, role: "student")
-        .then((data) {
+    await staffServices.getStaffByRole(role: role).then((data) {
       data.fold(
         (failure) {
           log(failure);
           ToastMessage().showToast(failure);
           setState(() {
             statLoading = false;
+            dataCount = 0;
           });
         },
         (data) {
           setState(() {
-            if (gender == "Female") {
-              femaleCount = data;
-            } else {
-              maleCount = data;
-            }
-
+            dataCount = data;
             statLoading = false;
           });
         },
       );
-      // if (mounted) {
-
-      // }
     });
   }
 
@@ -116,7 +107,7 @@ class _AllStudentState extends State<AllStudent> {
               children: [
                 InkWell(
                   onTap: () {
-                    loadStaff();
+                    loadGuard();
                   },
                   child: const Card(
                     color: Colors.white,
@@ -134,7 +125,7 @@ class _AllStudentState extends State<AllStudent> {
                       context: context,
                       builder: (BuildContext context) {
                         return const CustomerModalSheet(
-                          child: AddStudentScreen(),
+                          child: AddGuardScreen(),
                         );
                       },
                     );
@@ -173,30 +164,31 @@ class _AllStudentState extends State<AllStudent> {
           child: Column(
             children: [
               const CustomSafeArea(),
-              const CustomSafeArea(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.white,
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "Students".toUpperCase(),
-                      style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white),
-                    ),
-                    const SizedBox(),
-                  ],
+                      Text(
+                        "SECURITY GUARDS ".toUpperCase(),
+                        style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white),
+                      ),
+                      const SizedBox()
+                    ],
+                  ),
                 ),
               ),
               Expanded(
@@ -204,23 +196,14 @@ class _AllStudentState extends State<AllStudent> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ActivityCard(
-                            icon: Icons.person,
-                            title: "MALES",
-                            value: maleCount.toString(),
-                          ),
-                          const SizedBox(
-                            width: 16,
-                          ),
-                          ActivityCard(
-                            icon: Icons.person_3,
-                            title: "FEMALES",
-                            value: femaleCount.toString(),
-                          )
-                        ],
+                      child: SizedBox(
+                        width: ResponsiveWrapper.of(context).scaledWidth,
+                        child: ActivityCard(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          icon: Icons.person,
+                          title: "TOTAL GUARDS",
+                          value: dataCount.toString(),
+                        ),
                       ),
                     ),
                     const SizedBox(
@@ -240,54 +223,55 @@ class _AllStudentState extends State<AllStudent> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                             vertical: 8, horizontal: 16),
-                        child: isLoading
-                            ? const Center(
-                                child: SpinKitFadingCircle(
-                                color: Colors.green,
-                              ))
-                            : listofStaff.isEmpty
-                                ? const Column(
-                                    children: [
-                                      SizedBox(height: 200),
-                                      Icon(
-                                        Icons.person_2_outlined,
-                                        size: 100,
-                                        color: Colors.grey,
-                                      ),
-                                      Text("No student found",
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.grey,
-                                          ))
-                                    ],
-                                  )
-                                : ListView.separated(
-                                    padding: const EdgeInsets.only(
-                                        top: 0, bottom: 0),
-                                    shrinkWrap: true,
-                                    itemCount: listofStaff.length,
-                                    itemBuilder: (context, index) {
-                                      return InkWell(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        UserDetailScreen(
-                                                          user: listofStaff[
-                                                              index],
-                                                        )));
-                                          },
-                                          child: StudentInfoCard(
-                                            staff: listofStaff[index],
-                                          ));
+                        child: Visibility(
+                          visible: !isLoading,
+                          replacement: const Center(
+                              child: SpinKitFadingCircle(
+                            color: Colors.green,
+                          )),
+                          child: Visibility(
+                            visible: listofStaff.isNotEmpty,
+                            replacement: const Column(
+                              children: [
+                                SizedBox(height: 200),
+                                Icon(
+                                  Icons.person,
+                                  size: 100,
+                                  color: Colors.grey,
+                                ),
+                                Text("No guard found",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                    ))
+                              ],
+                            ),
+                            child: ListView.separated(
+                              padding: const EdgeInsets.only(top: 0, bottom: 0),
+                              shrinkWrap: true,
+                              itemCount: listofStaff.length,
+                              itemBuilder: (context, index) {
+                                return InkWell(
+                                    onTap: () {
+                                      // Navigator.push(
+                                      //     context,
+                                      //     MaterialPageRoute(
+                                      //         builder: (context) =>
+                                      //             const ReportDetail()));
                                     },
-                                    separatorBuilder: (context, index) =>
-                                        const SizedBox(
-                                      height: 10,
-                                    ),
-                                  ),
+                                    child: SecurityInfoCard(
+                                      //
+                                      guard: listofStaff[index],
+                                    ));
+                              },
+                              separatorBuilder: (context, index) =>
+                                  const Divider(
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -301,8 +285,8 @@ class _AllStudentState extends State<AllStudent> {
   }
 }
 
-// class StudentInfoCard extends StatelessWidget {
-//   const StudentInfoCard({
+// class StudentInfoCardS extends StatelessWidget {
+//   const StudentInfoCardS({
 //     super.key,
 //   });
 

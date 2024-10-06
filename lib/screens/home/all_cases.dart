@@ -1,12 +1,100 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:uds_security_app/models/caseModel/case.model.dart';
+import 'package:uds_security_app/models/userModel/user.model.dart';
+import 'package:uds_security_app/screens/home/dashboard.dart';
 import 'package:uds_security_app/screens/home/list_of_staff.dart';
 import 'package:uds_security_app/screens/student/list_of_student.dart';
 import 'package:uds_security_app/screens/student/components/report.details.dart';
 import 'package:uds_security_app/screens/student/profile.dart';
+import 'package:uds_security_app/services/case/cases_services.dart';
+import 'package:uds_security_app/services/staffAndStudent/staff_services.dart';
 
-class AllCases extends StatelessWidget {
-  const AllCases({super.key});
+class AllCases extends StatefulWidget {
+  final UserModel currentUser;
+  final String status;
+  const AllCases({super.key, required this.currentUser, required this.status});
+
+  @override
+  State<AllCases> createState() => _AllCasesState();
+}
+
+class _AllCasesState extends State<AllCases> with WidgetsBindingObserver {
+  final staffServices = StaffServices();
+  final caseServices = CaseServices();
+  int totalResolvecases = 0;
+  int totalUnResolvecases = 0;
+  CaseModel? caseNotiModel;
+
+  // NoticationApi noticationApi = NoticationApi();
+  int totalStaff = 0;
+  int totalStudent = 0;
+  bool statLoading = false;
+  List<CaseModel> listofCases = [];
+
+  bool isLoading = false;
+
+  @override
+  initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      loadCases();
+
+      getTotalCases(widget.status);
+    });
+    super.initState();
+  }
+
+  loadCases() async {
+    setState(() {
+      isLoading = true;
+    });
+    await caseServices.getAllCases(status: widget.status).then((data) {
+      data.fold(
+        (failure) {
+          log(failure);
+          ToastMessage().showToast(failure);
+          setState(() {
+            isLoading = false;
+          });
+        },
+        (data) {
+          setState(() {
+            listofCases = data;
+
+            isLoading = false;
+          });
+        },
+      );
+    });
+  }
+
+  getTotalCases(String status) async {
+    setState(() {
+      statLoading = true;
+    });
+    await caseServices.getCasesCount(status: status).then((data) {
+      data.fold(
+        (failure) {
+          ToastMessage().showToast(failure);
+          setState(() {
+            statLoading = false;
+          });
+        },
+        (caseData) {
+          setState(() {
+            // totalUnResolvecases = caseData;
+            totalResolvecases = caseData;
+            statLoading = false;
+          });
+        },
+      );
+      // if (mounted) {
+
+      // }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +120,7 @@ class AllCases extends StatelessWidget {
           child: Column(
             children: [
               const CustomSafeArea(),
+              const SizedBox(height: 30),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
@@ -47,7 +136,9 @@ class AllCases extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "CASES".toUpperCase(),
+                      widget.status == "false"
+                          ? "CASES".toUpperCase()
+                          : "Resolved".toUpperCase(),
                       style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w600,
@@ -72,11 +163,11 @@ class AllCases extends StatelessWidget {
                                     builder: (context) => const AllStaff(),
                                   ));
                             },
-                            child: const ActivityCard(
+                            child: ActivityCard(
                               width: 1,
                               icon: Icons.person_4,
-                              title: "Total Cases",
-                              value: "10",
+                              title: "Total Resolved",
+                              value: totalResolvecases.toString(),
                             ),
                           ),
                         ],
@@ -102,20 +193,24 @@ class AllCases extends StatelessWidget {
                         child: ListView.separated(
                           padding: const EdgeInsets.only(top: 0, bottom: 0),
                           shrinkWrap: true,
-                          itemCount: 10,
+                          itemCount: listofCases.length,
                           itemBuilder: (context, index) {
                             return InkWell(
                                 onTap: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ReportDetail()));
+                                          builder: (context) => ReportDetail(
+                                              currentUser: widget.currentUser,
+                                              cases: listofCases[index])));
                                 },
-                                child: const StudentCard(
-                                  
-                                  isResolved: false,
-                                ));
+                                child: CaseCard(
+                                    caseData: listofCases[index],
+                                    isResolved:
+                                        listofCases[index].status!.toString() ==
+                                                "false"
+                                            ? false
+                                            : true));
                           },
                           separatorBuilder: (context, index) => const Divider(
                             color: Colors.grey,

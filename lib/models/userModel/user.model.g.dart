@@ -9,6 +9,7 @@ part of 'user.model.dart';
 _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
     _$UserModelImpl(
       id: json['id'] as String?,
+      unitId: json['unitId'] as String?,
       firstName: json['firstName'] as String?,
       middleName: json['middleName'] as String?,
       lastName: json['lastName'] as String?,
@@ -23,6 +24,7 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
       status: json['status'] as String?,
       gender: json['gender'] as String?,
       userId: json['userId'] as String?,
+      rank: json['rank'] as String?,
       unitAssigned: json['unitAssigned'] as String?,
       password: json['password'] as String?,
     );
@@ -30,6 +32,7 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'unitId': instance.unitId,
       'firstName': instance.firstName,
       'middleName': instance.middleName,
       'lastName': instance.lastName,
@@ -44,6 +47,7 @@ Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
       'status': instance.status,
       'gender': instance.gender,
       'userId': instance.userId,
+      'rank': instance.rank,
       'unitAssigned': instance.unitAssigned,
       'password': instance.password,
     };

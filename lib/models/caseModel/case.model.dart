@@ -10,8 +10,9 @@ class CaseModel with _$CaseModel {
     String? studentId,
     String? level,
     String? statement,
+    String? quickReport,
     String? date,
-    bool? status,
+    String? status,
     String? securityAssign
     
   }) = _CaseModel;

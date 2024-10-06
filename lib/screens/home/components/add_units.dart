@@ -5,6 +5,7 @@ import 'package:uds_security_app/models/unitModel/unit.model.dart';
 import 'package:uds_security_app/models/userModel/user.model.dart';
 import 'package:uds_security_app/screens/home/dashboard.dart';
 import 'package:uds_security_app/screens/student/components/reportCase.dart';
+import 'package:uds_security_app/services/security/units_services.dart';
 import 'package:uds_security_app/services/staffAndStudent/staff_services.dart';
 
 class AddUnitScreen extends StatefulWidget {
@@ -22,6 +23,7 @@ class _AddUnitScreenState extends State<AddUnitScreen> {
   final TextEditingController _dateController = TextEditingController();
 
   StaffServices staffServices = StaffServices();
+    final unitServices = UnitServices();
 
   void clearTextFields() {
     _unitNameController.clear();
@@ -43,7 +45,7 @@ class _AddUnitScreenState extends State<AddUnitScreen> {
         status: _statusController.text,
       );
 
-      final result = await staffServices.addNewUnit(unit: unitModel);
+      final result = await unitServices.addNewUnit(unit: unitModel);
       result.fold(
         (failure) {
           ToastMessage().showToast(failure!);
